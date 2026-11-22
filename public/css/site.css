@@ -134,6 +134,12 @@ site-header, site-footer { display: block; }
 .site-nav { display: flex; flex-wrap: wrap; gap: 0 24px; }
 .site-nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; }
 .site-nav a:hover, .site-nav a[aria-current="page"] { color: var(--text); }
+.menu-btn { min-height: 44px; padding: 0 20px; }
+@media (min-width: 640px) { .menu-btn { display: none; } }
+@media (max-width: 639.98px) {
+  .site-nav { display: none; flex-basis: 100%; flex-direction: column; padding: 8px 0; border-top: 1px solid var(--line); }
+  .menu-open .site-nav { display: flex; }
+}
 
 /* <site-footer> */
 .site-footer {

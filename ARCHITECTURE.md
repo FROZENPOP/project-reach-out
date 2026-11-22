@@ -25,8 +25,8 @@ a CMS, a build step, a frontend framework.
 
 | Path | What | Task |
 |---|---|---|
-| `public/index.html`, `public/css/`, `public/js/site.js`, `public/_headers` | Home page, design tokens, shared header/footer, API helper | `skeleton` |
-| `src/worker/`, `migrations/`, `test/helpers/`, `test/api/` | Worker and schema | `skeleton`, then `api` |
+| `public/index.html`, `public/404.html`, `public/css/`, `public/js/site.js`, `public/_headers`, `test/skeleton/`, `test/data/` | Home page, design tokens, shared header/footer, API helper (built by `skeleton`, merged) | architect |
+| `src/worker/`, `migrations/`, `test/helpers/`, `test/api/` | Worker and schema | `api` |
 | `public/fact/`, `public/challenge/`, `public/pulse/`, `public/listen/`, `public/your-turn/`, `public/posters/`, `public/vendor/` | The five QR landing pages and the printable QR sheet | `qr-pages` |
 | `public/science/` | QR 6: the science, with references | `science` |
 | `public/game/` | Wire the Brain | `game` |
@@ -180,7 +180,8 @@ Code:
 - A failed request shows a visible message in an element with `role="alert"` and
   keeps what the user typed. No silent catch. The one exception is the `POST /api/count`
   ping: it may fail quietly, with a comment saying so, because a counter must never
-  interrupt a visitor.
+  interrupt a visitor. The footer's `/data/site.json` load may also fail quietly: the
+  safety lines render regardless, and `test/data/` catches a broken file in CI.
 - The Worker logs unexpected errors with `console.error` and returns 500 `internal`.
   No other console output is left in.
 - One test for each acceptance criterion in the brief. Logic that can be a pure

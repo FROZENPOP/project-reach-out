@@ -1,4 +1,4 @@
-skeleton public/index.html public/404.html public/_headers public/css/* public/js/* src/* migrations/* test/helpers/* test/skeleton/*
+api src/* migrations/* test/api/* test/helpers/*
 qr-pages public/fact/* public/challenge/* public/pulse/* public/listen/* public/your-turn/* public/posters/* public/vendor/* test/qr-pages/*
 science public/science/* test/science/*
 game public/game/* test/game/*

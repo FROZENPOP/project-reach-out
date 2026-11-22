@@ -17,5 +17,6 @@
   "ratelimits": [
     { "name": "LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
   ],
-  "observability": { "enabled": true }
+  // Invocation logs are off so request metadata (IP, user agent) is never recorded.
+  "observability": { "enabled": true, "logs": { "invocation_logs": false } }
 }

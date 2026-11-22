@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your turn | Reach Out</title>
+<meta name="description" content="Tell us, anonymously, what helps you feel connected to other people.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/fact/qr.css">
+<link rel="stylesheet" href="/your-turn/your-turn.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/your-turn/page.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap qr">
+  <div class="qr-top">
+    <p class="eyebrow">Your turn</p>
+    <p class="qr-code-num">Code 5 of 6</p>
+  </div>
+
+  <form id="yt-form" class="qr-body yt-form" novalidate>
+    <h1 id="yt-question">What helps you feel connected to other people?</h1>
+    <div class="stack">
+      <label for="yt-text" class="yt-label">Your answer</label>
+      <textarea id="yt-text" name="text" rows="5" aria-describedby="yt-count yt-note"></textarea>
+      <p id="yt-count" class="qr-small">0 of 280 characters</p>
+    </div>
+    <p id="yt-note" class="qr-small">Anonymous. Please do not include names. A team member reads answers before they appear on the site. This box is not monitored: if you need help now, call or text 988 or talk to an adult you trust.</p>
+    <p id="yt-error" class="alert" role="alert"></p>
+    <div class="qr-actions">
+      <button class="btn" type="submit" id="yt-submit">Send my answer</button>
+    </div>
+  </form>
+
+  <section id="yt-thanks" class="qr-body" hidden>
+    <h2 id="yt-thanks-title" tabindex="-1">Thanks for sharing.</h2>
+    <p class="muted">A team member will read your answer. If it is approved, it shows up with everyone else's on the results page.</p>
+  </section>
+  <div id="yt-next" class="qr-actions" hidden>
+    <a class="btn" href="/results/">See what others said</a>
+  </div>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

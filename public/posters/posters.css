@@ -1,0 +1,31 @@
+.posters { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--gutter) 64px; }
+.posters h1 { font-size: clamp(2rem, 6vw, 3rem); }
+.poster-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+
+/* The card is white so the code scans; text on it uses the ground colour. */
+.poster-card {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: #FFFFFF; color: var(--ground);
+  text-align: center;
+  break-inside: avoid;
+}
+.poster-num { font: 700 1rem var(--font-head); letter-spacing: 0.08em; }
+.poster-title { font-size: 1.25rem; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; }
+.poster-qr { display: block; width: 100%; max-width: 220px; height: auto; }
+.poster-url { font: 500 0.8125rem/1.3 var(--font-body); word-break: break-all; }
+
+@media print {
+  @page { size: letter; margin: 0.4in; }
+  body { background: #FFFFFF; color: #000000; }
+  site-header, site-footer, #poster-print, .poster-head { display: none !important; }
+  .posters { padding: 0; max-width: none; gap: 0; }
+  .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 0.2in; }
+  .poster-card { height: 3.2in; padding: 0.12in; border: 1px dashed #999999; border-radius: 0; color: #000000; justify-content: center; }
+  .poster-title { min-height: 0; font-size: 14pt; }
+  .poster-num { font-size: 11pt; }
+  .poster-qr { width: 2.1in; max-width: none; }
+  .poster-url { font-size: 8pt; }
+}

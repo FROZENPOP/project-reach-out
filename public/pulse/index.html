@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How connected are you? | Reach Out</title>
+<meta name="description" content="Three anonymous questions, then see how your school answered.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/fact/qr.css">
+<link rel="stylesheet" href="/pulse/pulse.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/pulse/page.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap qr">
+  <div class="qr-top">
+    <p class="eyebrow">Three questions</p>
+    <p class="qr-code-num">Code 3 of 6</p>
+  </div>
+  <div class="stack">
+    <h1>How connected are you?</h1>
+    <p class="muted">Anonymous. No name, no account.</p>
+    <p class="qr-small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
+  </div>
+
+  <form id="pulse-form" class="qr-body pulse-form" novalidate>
+    <div id="pulse-questions" class="pulse-questions"></div>
+    <p id="pulse-error" class="alert" role="alert"></p>
+    <div class="qr-actions">
+      <button class="btn" type="submit" id="pulse-submit">See how my school answered</button>
+      <p class="qr-small">These questions come from a short research scale (<a href="/science/#ref-hughes2004">Hughes et al., 2004</a>).</p>
+    </div>
+  </form>
+
+  <section id="pulse-results" class="qr-body" hidden>
+    <h2 id="pulse-thanks" tabindex="-1">Thanks.</h2>
+    <p id="pulse-status" class="muted">Loading how the group answered…</p>
+    <p id="pulse-results-error" class="alert" role="alert"></p>
+    <div><button class="btn-ghost" type="button" id="pulse-retry" hidden>Try again</button></div>
+    <figure id="pulse-chart" class="pulse-chart" hidden>
+      <figcaption class="qr-small">How many students got each total, from 3 to 9. Your total is marked.</figcaption>
+      <ol id="pulse-bars" class="pulse-bars"></ol>
+    </figure>
+    <p id="pulse-often" class="pulse-often" hidden></p>
+  </section>
+  <div id="pulse-next" class="qr-actions" hidden>
+    <a class="btn" href="/experiment/">Take the 24-hour challenge</a>
+  </div>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* Phone layout shared by the QR landing pages: top row, one big thing in the middle, actions at the bottom. */
+.qr {
+  max-width: 34rem;
+  min-height: calc(100svh - 84px);
+  display: flex; flex-direction: column; gap: 24px;
+  padding-bottom: 32px;
+}
+.qr-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qr-code-num { color: var(--muted); font-size: 0.875rem; }
+.qr-body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+.qr h1 { font-size: clamp(2.125rem, 7vw, 2.75rem); line-height: 1.12; letter-spacing: -0.01em; }
+.qr-small { color: var(--muted); font-size: 0.875rem; }
+.qr-actions { display: flex; flex-direction: column; gap: 12px; }
+.qr-actions .btn, .qr-actions .btn-ghost { min-height: 52px; width: 100%; }
+.qr-link { display: flex; align-items: center; justify-content: center; min-height: 44px; font-weight: 500; }
+[hidden] { display: none !important; }
+[tabindex="-1"]:focus { outline: none; } /* headings focused by script after a state change are not controls */

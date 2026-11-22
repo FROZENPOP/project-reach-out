@@ -122,7 +122,8 @@ set it.
 rounded to two decimals. `answers` is the 50 newest approved texts.
 
 Admin routes need `Authorization: Bearer <ADMIN_TOKEN>` (Worker secret), compared in
-constant time.
+constant time. The router enforces this for every path under `/api/admin/` before the
+handler, the rate limiter or any 404, so a request without the token does no work.
 
 ### Database (D1)
 

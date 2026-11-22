@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  resolveCode, formatCode, emptyForm, rate, toggleAction, canSubmit, startBody, chooseView, personalModel,
+  resolveCode, formatCode, emptyForm, rate, toggleAction, canSubmit, startBody, chooseView, personalModel, oneAtATime,
 } from '../../public/experiment/model.js';
-import { ApiError } from '../../public/js/site.js';
+import { api, ApiError } from '../../public/js/site.js';
+import { readFile } from 'node:fs/promises';
 
 test('1. code resolver prefers ?code=, normalises case, spaces and dashes, formats ABC-DEF', () => {
   assert.equal(resolveCode('?code=abc-def', 'ZZZZZZ'), 'ABCDEF');
@@ -27,6 +28,28 @@ test('2. check-in form: submit needs three ratings and two or three actions; a f
   assert.deepEqual(four.actions, ['talk_new', 'phone_free', 'reach_out']);
   assert.equal(canSubmit(toggleAction(toggleAction(f, 'reach_out'), 'phone_free')), false, 'one action');
   assert.deepEqual(startBody(f), { connected: 2, mood: 3, stress: 4, actions: ['talk_new', 'phone_free', 'reach_out'] });
+});
+
+test('2b. a second submit while one is pending sends nothing, for start and finish alike', async () => {
+  const sent = [];
+  let release;
+  globalThis.fetch = (url) => {
+    sent.push(url);
+    return new Promise((r) => { release = () => r(Response.json({ code: 'ABCDEF', ready_at: '2026-11-23T10:00:00Z' }, { status: 201 })); });
+  };
+  const inFlight = oneAtATime();
+  let f = rate(rate(rate(emptyForm(), 'connected', 2), 'mood', 3), 'stress', 4);
+  f = toggleAction(toggleAction(f, 'talk_new'), 'phone_free');
+  const first = inFlight(() => api('/api/experiment/start', { method: 'POST', body: startBody(f) }));
+  assert.equal(inFlight.busy(), true);
+  assert.equal(await inFlight(() => api('/api/experiment/start', { method: 'POST', body: startBody(f) })), undefined);
+  assert.equal(await inFlight(() => api('/api/experiment/ABCDEF/finish', { method: 'POST', body: {} })), undefined);
+  assert.equal(sent.length, 1);
+  release();
+  assert.equal((await first).code, 'ABCDEF');
+  assert.equal(inFlight.busy(), false);
+  const page = await readFile(new URL('../../public/experiment/experiment.js', import.meta.url), 'utf8');
+  assert.equal(page.match(/inFlight\.busy\(\)/g).length, 4, 'both submit handlers and both re-enable sites check the flag');
 });
 
 test('3. view chooser maps waiting, ready, done, 404 and 409 expired', () => {

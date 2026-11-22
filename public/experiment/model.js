@@ -47,7 +47,23 @@ export const startBody = (form) => ({
   actions: [...form.actions],
 });
 
-export const finishBody = (ratings) => ({ connected: ratings.connected, mood: ratings.mood, stress: ratings.stress });
+// One request at a time: a call while another is pending does nothing and resolves undefined.
+export function oneAtATime() {
+  let busy = false;
+  const run = async (fn) => {
+    if (busy) return undefined;
+    busy = true;
+    try {
+      return await fn();
+    } finally {
+      busy = false;
+    }
+  };
+  run.busy = () => busy;
+  return run;
+}
+
+export const finishBody =(ratings) => ({ connected: ratings.connected, mood: ratings.mood, stress: ratings.stress });
 
 // Maps a GET /api/experiment/:code result, or the ApiError it threw, to a view name.
 export function chooseView(result) {

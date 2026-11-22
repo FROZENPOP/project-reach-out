@@ -47,8 +47,10 @@ test('7. campaign totals the six scan counters, missing as zero, with titles', (
   assert.equal(c.totalScans, 15);
   assert.equal(c.scans.length, 6);
   assert.deepEqual(c.scans.map((s) => s.count), [10, 0, 5, 0, 0, 0]);
-  assert.equal(c.scans[0].title, 'Did you know?');
-  assert.equal(c.scans[5].title, 'Learn more');
+  assert.deepEqual(c.scans.map((s) => [s.n, s.title]), [
+    [1, 'Did you know?'], [2, 'Take a 30-second challenge'], [3, 'How connected are you?'],
+    [4, 'Listen'], [5, 'Your turn'], [6, 'Learn more'],
+  ]);
   assert.equal(c.clips, 0);
   assert.equal(campaignModel({}).totalScans, 0);
 });
@@ -66,6 +68,7 @@ test('8. answers: empty state, text kept as text, no innerHTML in our folders', 
   const page = await readFile(new URL('../../public/results/results.js', import.meta.url), 'utf8');
   assert.match(page, /el\('p', 'card answer', t\)/, 'answers go through el(), which sets textContent');
   assert.match(page, /node\.textContent = text/);
+  assert.match(page, /\$\{g\.label\}\. \$\{g\.note\}/, 'the table row carries "Lower is better."');
 });
 
 test('9. a failed results load is the alert state with no numbers', async () => {

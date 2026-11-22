@@ -55,7 +55,7 @@ function renderChart(exp) {
     group.append(bars, el('span', 'group-label', g.label), el('span', 'group-text', g.text));
     if (g.note) group.append(el('span', 'group-note', g.note));
     $('chart').append(group);
-    $('chart-rows').append(row([g.label, g.before.toFixed(2), g.after.toFixed(2), g.change]));
+    $('chart-rows').append(row([g.note ? `${g.label}. ${g.note}` : g.label,g.before.toFixed(2), g.after.toFixed(2), g.change]));
   }
 }
 

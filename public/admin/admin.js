@@ -74,6 +74,8 @@ async function openTab(status) {
     say('');
     renderRows();
   } catch (err) {
+    $('rows').replaceChildren();
+    $('rows-empty').hidden = true;
     fail(err);
   }
 }

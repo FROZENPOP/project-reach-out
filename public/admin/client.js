@@ -33,6 +33,9 @@ export function createAdmin(storage) {
     },
 
     async list(status) {
+      // Drop the old tab's rows first, so a failed load never shows them under the new tab.
+      state.status = status;
+      state.rows = [];
       const rows = await guard(api(`/api/admin/answers?status=${status}`, { token: token() }));
       state.status = status;
       state.rows = rows;

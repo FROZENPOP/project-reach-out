@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createAdmin, BAD_PASS } from '../../public/admin/client.js';
+import { createAdmin } from '../../public/admin/client.js';
 
 const memory = () => {
   const m = new Map();
@@ -36,7 +36,8 @@ test('10. admin client: header on every call, never in a URL, cleared on 401, Ap
   }
 
   reply = () => Response.json({ error: { code: 'unauthorized', message: 'Unauthorized.' } }, { status: 401 });
-  await assert.rejects(admin.list('pending'), { status: 401, message: BAD_PASS });
+  await assert.rejects(admin.list('pending'), { status: 401, message: 'That passphrase is not right.' });
   assert.equal(admin.hasToken(), false);
   assert.equal(store.m.size, 0);
+  assert.deepEqual(admin.state, { status: 'pending', rows: [] }, 'a failed tab load leaves no old rows');
 });

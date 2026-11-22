@@ -2,7 +2,7 @@
 import { api } from '/js/site.js';
 import {
   ACTIONS, MEASURES, actionLabel, resolveCode, normalizeCode, formatCode, emptyForm, rate, ratingsDone,
-  toggleAction, canSubmit, startBody, finishBody, chooseView, personalModel, readyText,
+  toggleAction, canSubmit, startBody, finishBody, chooseView, personalModel, readyText, oneAtATime,
 } from './model.js';
 import { barHeight, changeText } from '../results/model.js';
 
@@ -32,7 +32,10 @@ const HEADS = {
 let form = emptyForm();
 let post = {};
 let code = null;
+let codeFromStorage = false;
 let status = null;
+// Shared by start and finish, so a double tap never sends a second POST.
+const inFlight = oneAtATime();
 
 function show(view, message = '') {
   for (const s of document.querySelectorAll('.exp-view')) s.hidden = s.id !== `view-${view}`;
@@ -44,6 +47,7 @@ function show(view, message = '') {
   const codeForm = $('code-form');
   codeForm.hidden = view !== 'not-found';
   if (view === 'not-found') $('view-not-found').append(codeForm);
+  $('forget-missing-row').hidden = !(view === 'not-found' && codeFromStorage);
   $('have-code').setAttribute('aria-expanded', 'false');
   if (view !== 'loading') $('title').focus({ preventScroll: true });
 }
@@ -92,7 +96,7 @@ function syncChoices() {
     box.disabled = !box.checked && form.actions.length >= 3;
   }
   $('pick-count').textContent = `${form.actions.length} of 3 chosen`;
-  $('pick-submit').disabled = !canSubmit(form);
+  $('pick-submit').disabled = !canSubmit(form) || inFlight.busy();
 }
 
 function setUrlCode(c) {
@@ -194,7 +198,7 @@ function init() {
   });
   buildRatings($('post-ratings'), (k, v) => {
     post = { ...post, [k]: v };
-    $('checkout-submit').disabled = !ratingsDone(post);
+    $('checkout-submit').disabled = !ratingsDone(post) || inFlight.busy();
   });
   $('action-list').append(...ACTIONS.map(([id]) => choiceRow(id, false, () => {
     form = toggleAction(form, id);
@@ -211,40 +215,41 @@ function init() {
 
   $('pick-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!canSubmit(form)) return;
-    const button = $('pick-submit');
-    button.disabled = true;
-    try {
-      const res = await api('/api/experiment/start', { method: 'POST', body: startBody(form) });
-      code = res.code;
-      status = { status: 'waiting', ready_at: res.ready_at, actions: [...form.actions] };
-      store.set(CODE_KEY, code);
-      setUrlCode(null);
-      showWaiting();
-    } catch (err) {
-      $('alert').textContent = err.message;
-    } finally {
-      button.disabled = !canSubmit(form);
-    }
+    if (!canSubmit(form) || inFlight.busy()) return;
+    $('pick-submit').disabled = true;
+    await inFlight(async () => {
+      try {
+        const res = await api('/api/experiment/start', { method: 'POST', body: startBody(form) });
+        code = res.code;
+        codeFromStorage = false;
+        status = { status: 'waiting', ready_at: res.ready_at, actions: [...form.actions] };
+        store.set(CODE_KEY, code);
+        setUrlCode(null);
+        showWaiting();
+      } catch (err) {
+        $('alert').textContent = err.message;
+      }
+    });
+    syncChoices();
   });
 
   $('checkout-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!ratingsDone(post)) return;
-    const button = $('checkout-submit');
-    button.disabled = true;
-    try {
-      const res = await api(`/api/experiment/${encodeURIComponent(code)}/finish`, { method: 'POST', body: finishBody(post) });
-      store.del(CODE_KEY);
-      store.del(ticksKey());
-      showMine(res);
-    } catch (err) {
-      if (err.status === 409 && err.code === 'too_early') showWaiting();
-      else if (chooseView(err) === 'error') $('alert').textContent = err.message;
-      else show(chooseView(err));
-    } finally {
-      button.disabled = !ratingsDone(post);
-    }
+    if (!ratingsDone(post) || inFlight.busy()) return;
+    $('checkout-submit').disabled = true;
+    await inFlight(async () => {
+      try {
+        const res = await api(`/api/experiment/${encodeURIComponent(code)}/finish`, { method: 'POST', body: finishBody(post) });
+        store.del(CODE_KEY);
+        store.del(ticksKey());
+        showMine(res);
+      } catch (err) {
+        if (err.status === 409 && err.code === 'too_early') showWaiting();
+        else if (chooseView(err) === 'error') $('alert').textContent = err.message;
+        else show(chooseView(err));
+      }
+    });
+    $('checkout-submit').disabled = !ratingsDone(post);
   });
 
   $('have-code').addEventListener('click', () => {
@@ -263,6 +268,7 @@ function init() {
       return;
     }
     code = typed;
+    codeFromStorage = false;
     setUrlCode(code);
     lookUp();
   });
@@ -280,9 +286,11 @@ function init() {
     startFresh();
   });
   $('start-again').addEventListener('click', startFresh);
+  $('forget-missing').addEventListener('click', startFresh);
   $('retry').addEventListener('click', lookUp);
 
   code = resolveCode(location.search, store.get(CODE_KEY));
+  codeFromStorage = Boolean(code) && !normalizeCode(new URLSearchParams(location.search).get('code'));
   if (code) lookUp();
   else show('checkin');
 }

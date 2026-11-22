@@ -20,3 +20,12 @@ test('11. each index.html: one h1, header, footer, site.css, no style= or inline
     assert.equal(/<meta name="robots" content="noindex">/.test(html), page === 'admin', page);
   }
 });
+
+test('11b. check-in and check-out both say answers are not monitored and point to 988 and a trusted adult', async () => {
+  const html = await read('public/experiment/index.html');
+  const line = 'No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.';
+  for (const form of ['checkin-form', 'checkout-form']) {
+    const body = html.match(new RegExp(`<form id="${form}"[\\s\\S]*?</form>`))[0];
+    assert.ok(body.includes(line), form);
+  }
+});

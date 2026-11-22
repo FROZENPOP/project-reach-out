@@ -33,6 +33,7 @@
   <form id="checkin-form" class="exp-form">
     <div class="ratings" id="pre-ratings"></div>
     <p class="muted small">By continuing you agree that your anonymous answers can be used in our HOSA project.</p>
+    <p class="muted small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
     <p class="muted small">Next you pick two or three actions and get a short code. Bring the code back tomorrow to check out.</p>
     <button class="btn" type="submit" id="checkin-next" disabled>Save and pick my actions</button>
   </form>
@@ -79,6 +80,7 @@
 <section id="view-checkout" class="exp-view" hidden>
   <form id="checkout-form" class="exp-form">
     <div class="ratings" id="post-ratings"></div>
+    <p class="muted small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
     <button class="btn" type="submit" id="checkout-submit" disabled>Check out</button>
   </form>
 </section>
@@ -99,7 +101,9 @@
   <div><a class="btn" href="/results/">See the results</a></div>
 </section>
 
-<section id="view-not-found" class="exp-view" hidden></section>
+<section id="view-not-found" class="exp-view" hidden>
+  <div id="forget-missing-row" hidden><button class="btn-ghost" type="button" id="forget-missing">Start again</button></div>
+</section>
 
 <section id="view-expired" class="exp-view" hidden>
   <div><button class="btn" type="button" id="start-again">Start again</button></div>

@@ -14,3 +14,4 @@
 .qr-actions .btn, .qr-actions .btn-ghost { min-height: 52px; width: 100%; }
 .qr-link { display: flex; align-items: center; justify-content: center; min-height: 44px; font-weight: 500; }
 [hidden] { display: none !important; }
+[tabindex="-1"]:focus { outline: none; } /* headings focused by script after a state change are not controls */

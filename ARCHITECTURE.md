@@ -168,6 +168,12 @@ Content:
 
 Code:
 - Files `kebab-case`; JS `camelCase`; JSON and SQL fields `snake_case`.
+- The site's Content-Security-Policy (`public/_headers`) allows scripts and styles
+  from the site itself only. No inline `<script>`, no `style=""` attributes, no
+  `on*=""` attributes in any page; use classes from `site.css` or a page stylesheet
+  next to the page, and set dynamic styles from JS through `element.style`.
+- Text from the API or a data file goes into the page with `textContent`, never
+  `innerHTML`.
 - Validate every request body at the Worker; the browser's checks are for comfort.
 - All SQL uses bound parameters.
 - A failed request shows a visible message in an element with `role="alert"` and

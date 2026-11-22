@@ -1,0 +1,37 @@
+/* /science/ layout only; tokens and components come from site.css. */
+.science { max-width: 68ch; margin: 0 auto; padding: 40px 0 72px; font-size: 1.125rem; display: flex; flex-direction: column; gap: 64px; }
+.science section { display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 24px; }
+.science h1 { font-size: clamp(2.25rem, 8vw, 3.25rem); }
+.sci-intro { display: flex; flex-direction: column; gap: 16px; }
+.sci-lede { color: var(--muted); font-size: 1.1875rem; }
+
+.toc { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); }
+.toc-title { font-size: 1rem; margin-bottom: 8px; color: var(--signal); letter-spacing: 0.04em; }
+.toc ol { margin: 0; padding-left: 1.5em; columns: 2 16rem; column-gap: 32px; }
+.toc li { break-inside: avoid; color: var(--muted); }
+.toc a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+.factors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; }
+.factor { display: flex; flex-direction: column; gap: 8px; padding: 24px; border-radius: var(--radius-panel); background: var(--surface); border: 2px solid var(--line-strong); }
+.factor-protect { border-color: var(--connect); }
+.factor-label { font-weight: 600; font-size: 0.875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.factor-protect .factor-label { color: var(--connect); }
+.factor-name { font-family: var(--font-head); font-weight: 700; font-size: 1.5rem; line-height: 1.2; }
+
+.findings { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.finding { display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: var(--radius-card); background: var(--surface); border: 1px solid var(--line); }
+.finding-kind { color: var(--signal); font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.sci-figure { margin: 8px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.sci-figure svg { width: 100%; height: auto; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-card); }
+.sci-figure figcaption { color: var(--muted); font-size: 1rem; }
+
+.plain-list { margin: 0; padding-left: 1.25em; display: flex; flex-direction: column; gap: 10px; }
+.help { padding: 24px; border: 1.5px solid var(--signal); border-radius: var(--radius-card); }
+
+.refs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.0625rem; }
+.refs li { padding-left: 2em; text-indent: -2em; overflow-wrap: anywhere; scroll-margin-top: 24px; }
+.refs li:target { color: var(--connect); }
+
+@media (max-width: 480px) { .science { padding-top: 24px; gap: 48px; } .toc, .factor, .finding, .help { padding: 20px; } }

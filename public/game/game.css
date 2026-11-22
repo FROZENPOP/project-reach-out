@@ -1,5 +1,8 @@
 /* Wire the Brain: page layout and game pieces. Components and tokens come from site.css. */
 [hidden] { display: none !important; }
+/* The play area and the end heading take focus from script only (tabindex="-1"), to place the
+   keyboard; they are not controls, so no ring. Buttons and links keep site.css's ring. */
+[tabindex="-1"]:focus, [tabindex="-1"]:focus-visible { outline: none; }
 
 /* Start and end */
 .game-start, .game-end { display: flex; flex-direction: column; gap: 24px; padding-top: 48px; padding-bottom: 72px; max-width: 640px; }
@@ -44,8 +47,6 @@ body.is-playing { overflow: hidden; }
   border-radius: 20px; background: var(--board); border: 1px solid var(--line);
   overflow: hidden;
 }
-.board:focus { outline: none; }
-.board:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
 .brain { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* The brain map */

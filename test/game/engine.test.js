@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  createGame, advance, tap, view, endLine, EDGES, NEURONS, MOMENT_TEXTS, ROUND_MS, MOMENT_LIFE_MS, MAX_MOMENTS,
+  createGame, advance, tap, view, endLine, EDGES, NEURONS, MOMENT_TEXTS,
 } from '../../public/game/engine.js';
 
 const STEP = 50;
@@ -33,12 +33,11 @@ test('2. at most 3 moments, each lives 3.5 s, inside the play area, never overla
     const lastSeen = new Map();
     play(seed, (g) => {
       const v = view(g);
-      assert.ok(v.moments.length <= MAX_MOMENTS);
+      assert.ok(v.moments.length <= 3);
       for (const m of v.moments) {
         assert.ok(m.x >= 0 && m.y >= 0 && m.x + m.w <= 1 + 1e-9 && m.y + m.h <= 1 + 1e-9, 'inside');
-        assert.ok(m.life > 0 && m.life <= MOMENT_LIFE_MS);
-        if (!born.has(m.id)) born.set(m.id, g.time - (MOMENT_LIFE_MS - m.life));
-        assert.equal(g.time - (MOMENT_LIFE_MS - m.life), born.get(m.id), 'birth time stays fixed');
+        assert.ok(m.life > 0 && m.life <= 3500);
+        if (!born.has(m.id)) born.set(m.id, g.time); // first frame it was on screen
         lastSeen.set(m.id, g.time);
       }
       for (const a of v.moments) for (const b of v.moments) {
@@ -49,10 +48,12 @@ test('2. at most 3 moments, each lives 3.5 s, inside the play area, never overla
       return g;
     });
     assert.ok(born.size > 20);
-    for (const [id, b] of born) {
-      const end = b + MOMENT_LIFE_MS;
-      if (end >= ROUND_MS) continue; // still on screen when the round ended
-      assert.ok(lastSeen.get(id) < end && lastSeen.get(id) >= end - STEP, `moment ${id} lived 3.5 s`);
+    // Measured on screen, not read from life: it appeared within one STEP before its first
+    // frame and left within one STEP after its last, so on-screen time is 3500 ms give or take 2 STEPs.
+    for (const [id, first] of born) {
+      if (lastSeen.get(id) + STEP >= 60000) continue; // still on screen when the round ended
+      const shown = lastSeen.get(id) - first;
+      assert.ok(shown > 3500 - 2 * STEP && shown < 3500, `moment ${id} was on screen ${shown} ms, not 3.5 s`);
     }
   }
 });
@@ -129,7 +130,7 @@ test('6. with every edge lit, a tap still counts and changes no edge', () => {
 });
 
 test('7. finished at exactly 60 000 ms; taps and time after that change nothing', () => {
-  let g = advance(createGame(4), ROUND_MS - 1);
+  let g = advance(createGame(4), 60000 - 1);
   assert.equal(g.finished, false);
   assert.equal(view(g).timeLeft, 1);
   g = advance(g, 1);
@@ -137,7 +138,7 @@ test('7. finished at exactly 60 000 ms; taps and time after that change nothing'
   assert.equal(view(g).timeLeft, 0);
   assert.deepEqual(advance(g, 5000), g);
   for (let id = 0; id < 100; id++) assert.deepEqual(tap(g, id), g);
-  assert.equal(advance(createGame(4), ROUND_MS + 999).time, ROUND_MS);
+  assert.equal(advance(createGame(4), 60000 + 999).time, 60000);
 });
 
 test('8. a perfect player ends with 0 pruned and 30+ connections; an idle player with 0 and 0', () => {

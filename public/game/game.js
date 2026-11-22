@@ -35,6 +35,9 @@ let shown = { connections: 0, pruned: 0 };
 const buttons = new Map(); // moment id -> <button>
 let frame = 0;
 let lastTime = null;
+// Most game time one frame may play. A longer stall (a frozen or throttled tab with no
+// visibilitychange) is dropped, so moments never expire while nobody could see them.
+const MAX_FRAME_MS = 250;
 let pendingAnnounce = null;
 let lastAnnounce = -Infinity;
 
@@ -64,7 +67,7 @@ function start() {
 }
 
 function loop(now) {
-  if (lastTime !== null) game = advance(game, now - lastTime);
+  if (lastTime !== null) game = advance(game, Math.min(now - lastTime, MAX_FRAME_MS));
   lastTime = now;
   const v = view(game);
   render(v);

@@ -1,0 +1,22 @@
+/* /admin/ page styles. Colours come from the site.css tokens only. */
+.adm { display: flex; flex-direction: column; gap: 24px; max-width: 48rem; padding-bottom: 56px; }
+.adm h1 { font-size: clamp(2rem, 7vw, 2.75rem); }
+.adm-panel, .unlock { display: flex; flex-direction: column; gap: 16px; }
+.adm-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.unlock label { font-weight: 600; }
+.unlock-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.unlock-row input {
+  flex: 1 1 12rem; min-height: 48px; padding: 0 16px; border-radius: var(--radius-control);
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--text); font: 1rem var(--font-body);
+}
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tabs button {
+  min-height: 44px; padding: 0 18px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line-strong); background: transparent; color: var(--text);
+  font: 600 0.9375rem var(--font-body); cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--connect); border-color: var(--connect); color: var(--ground); }
+.rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.row-text { overflow-wrap: anywhere; }
+.small { font-size: 0.875rem; }
+[hidden] { display: none !important; }

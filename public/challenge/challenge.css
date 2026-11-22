@@ -1,0 +1,5 @@
+.ch-timer { font: 700 3rem/1 var(--font-head); color: var(--signal); }
+.ch-timer .muted { font: 500 1rem var(--font-body); }
+.link-button { background: none; border: 0; color: var(--connect); font: inherit; font-weight: 500; text-decoration: underline; cursor: pointer; width: 100%; }
+.link-button:hover { color: var(--connect-hover); }
+.link-button:disabled { opacity: 0.5; cursor: not-allowed; }

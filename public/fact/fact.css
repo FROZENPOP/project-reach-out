@@ -1,0 +1,4 @@
+.fact-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.fact-bar span { display: block; height: 100%; border-radius: 2px; background: var(--connect); transform-origin: left; animation: fact-fill 20s linear forwards; }
+@keyframes fact-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* With reduced motion, site.css shortens every animation to 0.01ms, so the bar shows full and still. */

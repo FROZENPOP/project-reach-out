@@ -1,0 +1,2 @@
+.listen-title { font-size: 1.375rem; }
+.listen-player iframe { display: block; width: 100%; height: 232px; border: 0; border-radius: var(--radius-card); background: var(--surface); }

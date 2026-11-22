@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Take a 30-second challenge | Reach Out</title>
+<meta name="description" content="One tiny thing to do right now to connect with someone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/fact/qr.css">
+<link rel="stylesheet" href="/challenge/challenge.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/challenge/page.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap qr">
+  <div class="qr-top">
+    <p class="eyebrow">Take a 30-second challenge</p>
+    <p class="qr-code-num">Code 2 of 6</p>
+  </div>
+
+  <section id="ch-task" class="qr-body" aria-live="polite">
+    <h1 id="ch-text">Loading a challenge…</h1>
+    <p class="muted">You have 30 seconds. Small moments like this one are how connection starts.</p>
+    <p class="ch-timer" id="ch-timer" hidden><span id="ch-left">30</span> <span id="ch-unit" class="muted">seconds left</span></p>
+    <p id="ch-error" class="alert" role="alert"></p>
+  </section>
+  <div id="ch-task-actions" class="qr-actions">
+    <button class="btn-ghost" type="button" id="ch-start" disabled>Start</button>
+    <button class="btn" type="button" id="ch-done">I did it</button>
+    <button class="qr-link link-button" type="button" id="ch-swap" disabled>Give me a different one</button>
+  </div>
+
+  <section id="ch-thanks" class="qr-body" hidden>
+    <h2 tabindex="-1" id="ch-thanks-title">Nice. You just made a connection.</h2>
+    <p class="muted">Every small reach-out counts. Next: three quick questions about how connected you feel.</p>
+  </section>
+  <div id="ch-thanks-actions" class="qr-actions" hidden>
+    <a class="btn" href="/pulse/">How connected are you?</a>
+  </div>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

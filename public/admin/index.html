@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin | Reach Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/admin/admin.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/admin/admin.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap adm">
+
+<h1>Team admin</h1>
+<div class="alert" role="alert" id="alert"></div>
+
+<form id="unlock" class="unlock">
+  <label for="pass">Passphrase</label>
+  <div class="unlock-row">
+    <input id="pass" type="password" autocomplete="current-password" required>
+    <button class="btn" type="submit">Unlock</button>
+  </div>
+</form>
+
+<div id="panel" class="adm-panel" hidden>
+  <div class="adm-top">
+    <h2>Answers</h2>
+    <button class="btn-ghost" type="button" id="lock">Lock</button>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Answer status">
+    <button type="button" role="tab" id="tab-pending" data-status="pending" aria-selected="true">Pending</button>
+    <button type="button" role="tab" id="tab-approved" data-status="approved" aria-selected="false">Approved</button>
+    <button type="button" role="tab" id="tab-rejected" data-status="rejected" aria-selected="false">Rejected</button>
+  </div>
+  <div role="tabpanel" id="rows-panel" aria-labelledby="tab-pending">
+    <p class="muted" id="rows-empty" hidden>Nothing here.</p>
+    <ul class="rows" id="rows"></ul>
+  </div>
+
+  <h2>Download the data</h2>
+  <div class="actions">
+    <button class="btn-ghost" type="button" data-table="experiment">Download CSV: experiment</button>
+    <button class="btn-ghost" type="button" data-table="pulse">Download CSV: pulse</button>
+    <button class="btn-ghost" type="button" data-table="answers">Download CSV: answers</button>
+    <button class="btn-ghost" type="button" data-table="counters">Download CSV: counters</button>
+  </div>
+</div>
+
+</main>
+<site-footer></site-footer>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 24-hour experiment | Reach Out</title>
+<meta name="description" content="Check in, connect on purpose for 24 hours, then check out. Anonymous.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/experiment/experiment.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/experiment/experiment.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap exp">
+
+<div class="exp-head">
+  <p class="eyebrow" id="step"></p>
+  <h1 id="title" tabindex="-1">The 24-hour experiment</h1>
+  <p class="muted" id="lede"></p>
+</div>
+
+<div class="alert" role="alert" id="alert"></div>
+
+<section id="view-loading" class="exp-view">
+  <p class="muted">Loading your code.</p>
+</section>
+
+<section id="view-checkin" class="exp-view" hidden>
+  <form id="checkin-form" class="exp-form">
+    <div class="ratings" id="pre-ratings"></div>
+    <p class="muted small">By continuing you agree that your anonymous answers can be used in our HOSA project.</p>
+    <p class="muted small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
+    <p class="muted small">Next you pick two or three actions and get a short code. Bring the code back tomorrow to check out.</p>
+    <button class="btn" type="submit" id="checkin-next" disabled>Save and pick my actions</button>
+  </form>
+  <button type="button" class="link-btn" id="have-code" aria-expanded="false" aria-controls="code-form">I have a code</button>
+</section>
+
+<section id="view-pick" class="exp-view" hidden>
+  <form id="pick-form" class="exp-form">
+    <fieldset class="choices">
+      <legend>Pick two or three things to do in the next 24 hours.</legend>
+      <div class="choice-list" id="action-list"></div>
+    </fieldset>
+    <p class="muted small" id="pick-count" aria-live="polite">0 of 3 chosen</p>
+    <div class="actions">
+      <button class="btn-ghost" type="button" id="pick-back">Back</button>
+      <button class="btn" type="submit" id="pick-submit" disabled>Get my code</button>
+    </div>
+  </form>
+</section>
+
+<section id="view-waiting" class="exp-view" hidden>
+  <div class="panel code-panel">
+    <p class="eyebrow">Your code</p>
+    <p class="code" id="code-text"></p>
+    <p id="ready-text"></p>
+    <p class="muted">This phone will remember your code. Take a screenshot in case.</p>
+  </div>
+  <fieldset class="choices">
+    <legend>Your actions for the next 24 hours</legend>
+    <div class="choice-list" id="tick-list"></div>
+  </fieldset>
+  <div>
+    <button class="btn-ghost" type="button" id="start-over">Start over</button>
+  </div>
+  <div class="card" id="start-over-confirm" hidden>
+    <p>Forget this code on this phone? You cannot check out without it.</p>
+    <div class="actions">
+      <button class="btn" type="button" id="forget-yes">Forget my code</button>
+      <button class="btn-ghost" type="button" id="forget-no">Keep my code</button>
+    </div>
+  </div>
+</section>
+
+<section id="view-checkout" class="exp-view" hidden>
+  <form id="checkout-form" class="exp-form">
+    <div class="ratings" id="post-ratings"></div>
+    <p class="muted small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
+    <button class="btn" type="submit" id="checkout-submit" disabled>Check out</button>
+  </form>
+</section>
+
+<section id="view-mine" class="exp-view" hidden>
+  <div class="panel">
+    <div class="pair-legend muted small">
+      <span><span class="swatch swatch-before"></span>Before</span>
+      <span><span class="swatch swatch-after"></span>After</span>
+    </div>
+    <div class="pairs" id="pairs"></div>
+    <p class="muted small">For stress, lower is the better direction.</p>
+  </div>
+  <div><a class="btn" href="/results/">See the whole group's results</a></div>
+</section>
+
+<section id="view-done" class="exp-view" hidden>
+  <div><a class="btn" href="/results/">See the results</a></div>
+</section>
+
+<section id="view-not-found" class="exp-view" hidden>
+  <div id="forget-missing-row" hidden><button class="btn-ghost" type="button" id="forget-missing">Start again</button></div>
+</section>
+
+<section id="view-expired" class="exp-view" hidden>
+  <div><button class="btn" type="button" id="start-again">Start again</button></div>
+</section>
+
+<section id="view-error" class="exp-view" hidden>
+  <div><button class="btn" type="button" id="retry">Try again</button></div>
+</section>
+
+<form id="code-form" class="code-form" hidden>
+  <label for="code-input">Your code</label>
+  <div class="code-row">
+    <input id="code-input" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="ABC-DEF">
+    <button class="btn" type="submit">Look up</button>
+  </div>
+</form>
+
+</main>
+<site-footer></site-footer>
+</body>
+</html>

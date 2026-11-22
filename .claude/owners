@@ -1,5 +1,5 @@
 skeleton public/index.html public/404.html public/_headers public/css/* public/js/* src/* migrations/* test/helpers/* test/skeleton/*
-qr-pages public/fact/* public/challenge/* public/pulse/* public/listen/* public/your-turn/* public/posters/* public/vendor/* public/data/facts.json public/data/challenges.json test/qr-pages/*
+qr-pages public/fact/* public/challenge/* public/pulse/* public/listen/* public/your-turn/* public/posters/* public/vendor/* test/qr-pages/*
 science public/science/* test/science/*
 game public/game/* test/game/*
 experiment-ui public/experiment/* public/results/* public/admin/* test/experiment-ui/*

@@ -27,12 +27,12 @@ a CMS, a build step, a frontend framework.
 |---|---|---|
 | `public/index.html`, `public/css/`, `public/js/site.js`, `public/_headers` | Home page, design tokens, shared header/footer, API helper | `skeleton` |
 | `src/worker/`, `migrations/`, `test/helpers/`, `test/api/` | Worker and schema | `skeleton`, then `api` |
-| `public/fact/`, `public/challenge/`, `public/pulse/`, `public/listen/`, `public/your-turn/`, `public/posters/`, `public/vendor/`, `public/data/facts.json`, `public/data/challenges.json` | The five QR landing pages and the printable QR sheet | `qr-pages` |
+| `public/fact/`, `public/challenge/`, `public/pulse/`, `public/listen/`, `public/your-turn/`, `public/posters/`, `public/vendor/` | The five QR landing pages and the printable QR sheet | `qr-pages` |
 | `public/science/` | QR 6: the science, with references | `science` |
 | `public/game/` | Wire the Brain | `game` |
 | `public/experiment/`, `public/results/`, `public/admin/` | 24-hour experiment, results graph, moderation | `experiment-ui` |
 | `test/<task>/` | Each task's tests | that task |
-| `package.json`, `wrangler.jsonc`, `.github/`, `public/data/site.json`, `public/data/references.json`, `ARCHITECTURE.md` | Shared config and canonical content | architect |
+| `package.json`, `wrangler.jsonc`, `.github/`, `public/data/*.json`, `docs/`, `ARCHITECTURE.md` | Shared config and canonical content | architect |
 
 `.claude/owners` is the enforced version of this table.
 
@@ -177,7 +177,9 @@ Code:
 - Validate every request body at the Worker; the browser's checks are for comfort.
 - All SQL uses bound parameters.
 - A failed request shows a visible message in an element with `role="alert"` and
-  keeps what the user typed. No silent catch.
+  keeps what the user typed. No silent catch. The one exception is the `POST /api/count`
+  ping: it may fail quietly, with a comment saying so, because a counter must never
+  interrupt a visitor.
 - The Worker logs unexpected errors with `console.error` and returns 500 `internal`.
   No other console output is left in.
 - One test for each acceptance criterion in the brief. Logic that can be a pure

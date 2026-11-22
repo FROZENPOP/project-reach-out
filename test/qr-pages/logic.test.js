@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { pickOther, shortCitation } from '../../public/fact/logic.js';
 import { pickChallenge } from '../../public/challenge/logic.js';
-import { buildPulseBody, resultsView } from '../../public/pulse/logic.js';
+import { buildPulseBody, resultsView, loadResultsView } from '../../public/pulse/logic.js';
 import { podcastView } from '../../public/listen/logic.js';
 import { validateAnswer, counterText } from '../../public/your-turn/logic.js';
 import { qrUrl, qrMatrix, qrSvgParts, QUIET } from '../../public/posters/logic.js';
+import qrcode from '../../public/vendor/qrcode.js';
 
 const json = async (path) => JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), 'utf8'));
 
@@ -62,7 +63,9 @@ test('4. pulse body maps labels to 1, 2, 3 and refuses until all three are answe
   assert.equal(buildPulseBody({ lack: 'Often', left_out: 'Often', isolated: 'Always' }), null);
 });
 
-test('5. pulse results view: few, seven bars with you marked, the Often note, no labelling words', () => {
+const realFetch = globalThis.fetch;
+
+test('5. pulse results view: few, seven bars with you marked, the Often note (even when results fail), singular, no labelling words', async () => {
   const few = resultsView({ pulse: { n: 3, mean: null, counts: null } }, { lack: 1, left_out: 1, isolated: 1 });
   assert.equal(few.few, 'Not enough answers yet to show the group.');
   assert.equal(few.bars, null);
@@ -76,6 +79,20 @@ test('5. pulse results view: few, seven bars with you marked, the Often note, no
   assert.deepEqual(view.bars.filter((b) => b.you).map((b) => b.total), [5]);
   assert.match(view.often, /call or text 988/);
   assert.equal(resultsView({ pulse: { n: 40, counts: { 6: 1 } } }, { lack: 2, left_out: 2, isolated: 2 }).often, null);
+
+  assert.equal(resultsView({ pulse: { n: 1, counts: null } }, { lack: 1, left_out: 1, isolated: 1 }).thanks, 'Thanks. 1 student has answered.');
+  assert.equal(resultsView({ pulse: { n: 2, counts: null } }, { lack: 1, left_out: 1, isolated: 1 }).thanks, 'Thanks. 2 students have answered.');
+
+  // The support note never depends on the results request.
+  globalThis.fetch = async () => { throw new TypeError('Failed to fetch'); };
+  try {
+    const failed = await loadResultsView({ lack: 1, left_out: 1, isolated: 3 });
+    assert.match(failed.error, /Could not load/);
+    assert.match(failed.often, /counselor or an adult you trust.*call or text 988/);
+    assert.equal((await loadResultsView({ lack: 2, left_out: 1, isolated: 2 })).often, null);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 
   const strings = JSON.stringify([few, view]).toLowerCase();
   for (const word of ['lonely', 'high', 'low', 'good', 'bad']) assert.ok(!strings.includes(word), word);
@@ -134,6 +151,16 @@ test('9. encoder gives a square matrix with finder patterns; the SVG adds a 4-mo
   finder(0, 0);
   finder(0, n - 7);
   finder(n - 7, 0);
+
+  // Error correction level from the format bits next to the top-left finder: XOR 0x5412, top two bits are L 01, M 00, Q 11, H 10.
+  const cells = [[8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8], [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8]];
+  const level = (matrix) => ((cells.reduce((a, [r, c]) => (a << 1) | (matrix[r][c] ? 1 : 0), 0) ^ 0x5412) >> 13);
+  assert.equal(level(m), 0b00, 'level M');
+  const l = qrcode(0, 'L');
+  l.addData('https://example.com/q/1');
+  l.make();
+  const lMatrix = Array.from({ length: l.getModuleCount() }, (_, r) => Array.from({ length: l.getModuleCount() }, (_, c) => l.isDark(r, c)));
+  assert.equal(level(lMatrix), 0b01, 'the reader tells level L apart');
 
   const { size, path } = qrSvgParts('https://example.com/q/1');
   assert.equal(QUIET, 4);

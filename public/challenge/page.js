@@ -17,6 +17,7 @@ function show() {
   stopTimer();
   current = pickChallenge(challenges.length, current);
   $('ch-text').textContent = challenges[current].text;
+  $('ch-live').textContent = '';
 }
 
 function start() {
@@ -26,12 +27,15 @@ function start() {
   $('ch-unit').textContent = 'seconds left';
   $('ch-timer').hidden = false;
   $('ch-start').textContent = 'Start again';
+  // Only the start and the end are announced; the ticking number is not in a live region.
+  $('ch-live').textContent = `${SECONDS} seconds, go.`;
   timer = setInterval(() => {
     const left = remaining(Date.now() - t0);
     $('ch-left').textContent = left;
     if (left === 0) {
       clearInterval(timer);
       $('ch-unit').textContent = 'seconds. Time is up. Did you do it?';
+      $('ch-live').textContent = 'Time is up. Did you do it?';
     }
   }, 250);
 }

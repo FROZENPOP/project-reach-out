@@ -1,5 +1,4 @@
-import { api } from '/js/site.js';
-import { QUESTIONS, OPTIONS, resultsView, submitPulse } from '/pulse/logic.js';
+import { QUESTIONS, OPTIONS, oftenNote, loadResultsView, submitPulse } from '/pulse/logic.js';
 
 const $ = (id) => document.getElementById(id);
 const KEY = 'reach-out:pulse';
@@ -67,21 +66,18 @@ async function showResults() {
   $('pulse-retry').hidden = true;
   $('pulse-status').textContent = 'Loading how the group answered…';
   $('pulse-status').hidden = false;
-  let results;
-  try {
-    results = await api('/api/results');
-  } catch (err) {
+  // The support note comes from the visitor's own answers, before and regardless of the results request.
+  const often = oftenNote(own);
+  $('pulse-often').textContent = often ?? '';
+  $('pulse-often').hidden = !often;
+  const view = await loadResultsView(own);
+  if (view.error) {
     $('pulse-status').hidden = true;
-    $('pulse-results-error').textContent = `Could not load how the group answered. ${err.message}`;
+    $('pulse-results-error').textContent = view.error;
     $('pulse-retry').hidden = false;
     return;
   }
-  const view = resultsView(results, own);
   $('pulse-thanks').textContent = view.thanks;
-  if (view.often) {
-    $('pulse-often').textContent = view.often;
-    $('pulse-often').hidden = false;
-  }
   if (view.few) {
     $('pulse-status').textContent = view.few;
     return;

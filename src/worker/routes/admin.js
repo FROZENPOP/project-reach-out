@@ -1,4 +1,3 @@
-import { requireAdmin } from '../lib/auth.js';
 import { readJson, oneOf, invalid } from '../lib/body.js';
 import { toCsv } from '../lib/csv.js';
 import { HttpError, json } from '../lib/http.js';
@@ -17,7 +16,6 @@ export const TABLES = {
 
 // GET /api/admin/answers?status=pending
 export async function listAnswers({ request, env }) {
-  await requireAdmin(request, env);
   const status = new URL(request.url).searchParams.get('status') ?? 'pending';
   if (!STATUSES.includes(status)) throw invalid(`status must be one of: ${STATUSES.join(', ')}.`);
   const { results } = await env.DB.prepare(
@@ -28,7 +26,6 @@ export async function listAnswers({ request, env }) {
 
 // POST /api/admin/answers/:id { status }
 export async function setAnswer({ request, env, params: [id] }) {
-  await requireAdmin(request, env);
   const status = oneOf(await readJson(request), 'status', ['approved', 'rejected']);
   const { meta } = await env.DB.prepare('UPDATE answers SET status = ? WHERE id = ?').bind(status, Number(id)).run();
   if (meta.changes !== 1) throw new HttpError(404, 'not_found', 'No answer with that id.');
@@ -37,7 +34,6 @@ export async function setAnswer({ request, env, params: [id] }) {
 
 // GET /api/admin/export.csv?table=
 export async function exportCsv({ request, env }) {
-  await requireAdmin(request, env);
   const name = new URL(request.url).searchParams.get('table');
   if (!Object.hasOwn(TABLES, name)) throw invalid(`table must be one of: ${Object.keys(TABLES).join(', ')}.`);
   const { columns, order } = TABLES[name];

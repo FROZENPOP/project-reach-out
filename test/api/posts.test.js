@@ -1,6 +1,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { makeEnv, call } from '../helpers/env.js';
+import { handle } from '../../src/worker/index.js';
 import { cleanText } from '../../src/worker/lib/body.js';
 
 let env, dispose;
@@ -61,6 +62,62 @@ test('4. empty, whitespace-only and 281-character answers are 400; 280 emoji are
   const res = await call(env, 'POST', '/api/answers', { body: { text: emoji } });
   assert.equal(res.status, 201);
   assert.deepEqual(await all('SELECT text FROM answers'), [{ text: emoji }]);
+});
+
+test('4b. an answer of only zero-width spaces is 400; one visible character among them is accepted', async () => {
+  for (const text of ['​​​', '​ ‍﻿⁠ㅤ']) {
+    const res = await call(env, 'POST', '/api/answers', { body: { text } });
+    assert.equal(res.status, 400, JSON.stringify(text));
+    assert.equal(await code(res), 'invalid_body');
+  }
+  assert.deepEqual(await all('SELECT * FROM answers'), []);
+  const res = await call(env, 'POST', '/api/answers', { body: { text: '​​x​' } });
+  assert.equal(res.status, 201);
+  assert.equal((await all('SELECT * FROM answers')).length, 1);
+});
+
+test('5b. a 5000-byte body to every POST route is 413 too_large and stores nothing, with or without Content-Length', async () => {
+  const { code: expCode } = await (await call(env, 'POST', '/api/experiment/start', {
+    body: { connected: 3, mood: 3, stress: 3, actions: ['talk_new', 'reach_out'] },
+  })).json();
+  await env.DB.prepare("INSERT INTO answers (created_at, text) VALUES ('2026-11-20T00:00:00.000Z', 'x')").run();
+  const before = await all('SELECT * FROM experiment');
+  const later = new Date(Date.now() + 19 * 3600_000);
+  const headers = { Authorization: 'Bearer test-token', 'Content-Type': 'application/json' };
+  const posts = [
+    ['/api/count', { name: 'game_played' }],
+    ['/api/pulse', { lack: 1, left_out: 1, isolated: 1 }],
+    ['/api/answers', { text: 'hello' }],
+    ['/api/experiment/start', { connected: 3, mood: 3, stress: 3, actions: ['talk_new', 'reach_out'] }],
+    [`/api/experiment/${expCode}/finish`, { connected: 4, mood: 4, stress: 2 }],
+    ['/api/admin/answers/1', { status: 'approved' }],
+  ];
+  // A valid body padded with spaces to exactly `size` bytes.
+  const padded = (body, size) => { const s = JSON.stringify(body); return s + ' '.repeat(size - s.length); };
+  const stream = (text) => new ReadableStream({
+    start(c) { for (let i = 0; i < text.length; i += 1000) c.enqueue(new TextEncoder().encode(text.slice(i, i + 1000))); c.close(); },
+  });
+  for (const [path, body] of posts) {
+    const big = padded(body, 5000);
+    const requests = [
+      new Request(`http://localhost${path}`, { method: 'POST', headers: { ...headers, 'Content-Length': '5000' }, body: big }),
+      new Request(`http://localhost${path}`, { method: 'POST', headers, body: stream(big), duplex: 'half' }),
+    ];
+    assert.equal(requests[1].headers.get('Content-Length'), null);
+    for (const req of requests) {
+      const res = await handle(req, env, later);
+      assert.equal(res.status, 413, path);
+      assert.equal(await code(res), 'too_large');
+    }
+  }
+  assert.deepEqual(await all('SELECT * FROM counters'), []);
+  assert.deepEqual(await all('SELECT * FROM pulse'), []);
+  assert.deepEqual(await all('SELECT text, status FROM answers'), [{ text: 'x', status: 'pending' }]);
+  assert.deepEqual(await all('SELECT * FROM experiment'), before);
+
+  // Exactly at the limit is read and parsed.
+  const res = await call(env, 'POST', '/api/pulse', { body: padded({ lack: 1, left_out: 1, isolated: 1 }, 4096) });
+  assert.equal(res.status, 201);
 });
 
 test('5. every POST route is 429 rate_limited and stores nothing when the limiter denies', async () => {

@@ -1,5 +1,6 @@
 import { HttpError, errorResponse } from './lib/http.js';
 import { rateLimit } from './lib/limit.js';
+import { requireAdmin } from './lib/auth.js';
 import qr from './routes/qr.js';
 import count from './routes/count.js';
 import results from './routes/results.js';
@@ -26,6 +27,8 @@ export const routes = [
 
 async function route(request, env, now, pathname) {
   try {
+    // Every admin path, known or not, is checked here, so no admin handler can ship open.
+    if (pathname.startsWith('/api/admin/')) await requireAdmin(request, env);
     for (const [method, pattern, handler] of routes) {
       const match = request.method === method && pathname.match(pattern);
       if (!match) continue;

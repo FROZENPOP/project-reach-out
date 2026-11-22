@@ -1,7 +1,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { makeEnv, call } from '../helpers/env.js';
-import { ALPHABET, newCode, normalizeCode } from '../../src/worker/lib/code.js';
+import { newCode, normalizeCode } from '../../src/worker/lib/code.js';
 
 let env, dispose;
 beforeEach(async () => ({ env, dispose } = await makeEnv()));
@@ -32,9 +32,39 @@ test('6. start with 2 or 3 distinct actions is 201 with a valid code and ready_a
     assert.deepEqual(JSON.parse(row.actions), actions);
     assert.equal(row.created_at, T0.toISOString());
   }
-  // Codes use every letter of the alphabet and nothing else.
-  const seen = new Set(Array.from({ length: 400 }, newCode).join(''));
-  assert.deepEqual([...seen].sort().join(''), [...ALPHABET].sort().join(''));
+  // Codes use every letter of the brief's alphabet and nothing else (literal, not the code's constant).
+  const codes = Array.from({ length: 400 }, newCode);
+  for (const c of codes) assert.match(c, /^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$/);
+  const seen = new Set(codes.join(''));
+  assert.deepEqual([...seen].sort().join(''), [...'ABCDEFGHJKMNPQRSTUVWXYZ23456789'].sort().join(''));
+});
+
+test('6b. a primary-key collision on the first generated code is retried and start still succeeds', async (t) => {
+  await env.DB.prepare("INSERT INTO experiment (code, created_at, actions, pre_connected, pre_mood, pre_stress) VALUES ('AAAAAA', ?, '[]', 1, 1, 1)")
+    .bind(T0.toISOString()).run();
+  const real = crypto.getRandomValues.bind(crypto);
+  let calls = 0;
+  // First call: all zero bytes, so the first code is AAAAAA, which is taken. Later calls are random.
+  t.mock.method(crypto, 'getRandomValues', (bytes) => (calls++ === 0 ? bytes.fill(0) : real(bytes)));
+  const res = await start();
+  assert.equal(res.status, 201);
+  const { code } = await res.json();
+  assert.notEqual(code, 'AAAAAA');
+  assert.ok(calls >= 2);
+  assert.equal((await env.DB.prepare('SELECT COUNT(*) AS n FROM experiment').first()).n, 2);
+});
+
+test('9b. at exactly 7 days status is ready and finish is 200; one millisecond later both are 409 expired', async () => {
+  const post = { connected: 4, mood: 4, stress: 2 };
+  const a = await started();
+  assert.equal((await (await status(a, at(7 * DAY))).json()).status, 'ready');
+  assert.equal((await finish(a, post, at(7 * DAY))).status, 200);
+
+  const b = await started();
+  for (const res of [await status(b, at(7 * DAY + 1)), await finish(b, post, at(7 * DAY + 1))]) {
+    assert.equal(res.status, 409);
+    assert.equal(await errCode(res), 'expired');
+  }
 });
 
 test('7. bad action lists or scale values are 400 and store nothing', async () => {

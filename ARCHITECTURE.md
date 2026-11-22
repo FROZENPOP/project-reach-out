@@ -173,7 +173,8 @@ Code:
   `on*=""` attributes in any page; use classes from `site.css` or a page stylesheet
   next to the page, and set dynamic styles from JS through `element.style`.
 - Text from the API or a data file goes into the page with `textContent`, never
-  `innerHTML`.
+  `innerHTML`. The one exception is the shared footer in `site.js`: a tested pure
+  function that escapes every site value and returns markup.
 - Validate every request body at the Worker; the browser's checks are for comfort.
 - All SQL uses bound parameters.
 - A failed request shows a visible message in an element with `role="alert"` and

@@ -1,0 +1,92 @@
+import { test, beforeEach, afterEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { makeEnv, call } from '../helpers/env.js';
+import { cleanText } from '../../src/worker/lib/body.js';
+
+let env, dispose;
+beforeEach(async () => ({ env, dispose } = await makeEnv()));
+afterEach(() => dispose());
+
+const all = async (sql) => (await env.DB.prepare(sql).all()).results;
+const code = async (res) => (await res.json()).error.code;
+
+test('1. a valid pulse is 201 and stores one row with a UTC ISO timestamp', async () => {
+  const now = new Date('2026-11-21T08:30:00.000Z');
+  const res = await call(env, 'POST', '/api/pulse', { body: { lack: 1, left_out: 2, isolated: 3 }, now });
+  assert.equal(res.status, 201);
+  assert.deepEqual(await res.json(), { ok: true });
+  const rows = await all('SELECT created_at, lack, left_out, isolated FROM pulse');
+  assert.deepEqual(rows, [{ created_at: '2026-11-21T08:30:00.000Z', lack: 1, left_out: 2, isolated: 3 }]);
+  assert.match(rows[0].created_at, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
+});
+
+test('2. bad pulse values, missing fields and non-JSON are 400 invalid_body and store nothing', async () => {
+  const bodies = [
+    { lack: 0, left_out: 2, isolated: 2 },
+    { lack: 4, left_out: 2, isolated: 2 },
+    { lack: 2, left_out: 1.5, isolated: 2 },
+    { lack: 2, left_out: '2', isolated: 2 },
+    { lack: 2, left_out: 2, isolated: true },
+    { lack: 2, left_out: 2 },
+    {},
+    'not json',
+    '[1,2,3]',
+  ];
+  for (const body of bodies) {
+    const res = await call(env, 'POST', '/api/pulse', { body });
+    assert.equal(res.status, 400, JSON.stringify(body));
+    assert.equal(await code(res), 'invalid_body');
+  }
+  assert.deepEqual(await all('SELECT * FROM pulse'), []);
+});
+
+test('3. a valid answer is 201, stored pending, trimmed, control characters removed', async () => {
+  const res = await call(env, 'POST', '/api/answers', { body: { text: '  \u0000hi\u0007 there\r\nfriend\t\u001b  ' } });
+  assert.equal(res.status, 201);
+  assert.deepEqual(await res.json(), { ok: true });
+  assert.deepEqual(await all('SELECT text, status FROM answers'), [{ text: 'hi there\nfriend', status: 'pending' }]);
+  assert.equal(cleanText('\u007fa\u0085b\n'), 'ab');
+});
+
+test('4. empty, whitespace-only and 281-character answers are 400; 280 emoji are accepted', async () => {
+  for (const text of ['', '   \n\t ', '\u0000\u0001', 'a'.repeat(281), '😀'.repeat(281), 42]) {
+    const res = await call(env, 'POST', '/api/answers', { body: { text } });
+    assert.equal(res.status, 400, JSON.stringify(text));
+    assert.equal(await code(res), 'invalid_body');
+  }
+  assert.deepEqual(await all('SELECT * FROM answers'), []);
+
+  const emoji = '😀'.repeat(280);
+  assert.equal(emoji.length, 560);
+  const res = await call(env, 'POST', '/api/answers', { body: { text: emoji } });
+  assert.equal(res.status, 201);
+  assert.deepEqual(await all('SELECT text FROM answers'), [{ text: emoji }]);
+});
+
+test('5. every POST route is 429 rate_limited and stores nothing when the limiter denies', async () => {
+  const { code: expCode } = await (await call(env, 'POST', '/api/experiment/start', {
+    body: { connected: 3, mood: 3, stress: 3, actions: ['talk_new', 'reach_out'] },
+  })).json();
+  await env.DB.prepare("INSERT INTO answers (created_at, text) VALUES ('2026-11-20T00:00:00.000Z', 'x')").run();
+  const before = await all('SELECT * FROM experiment');
+
+  env.LIMITER.allow = false;
+  const later = new Date(Date.now() + 19 * 3600_000);
+  const posts = [
+    ['/api/count', { name: 'game_played' }],
+    ['/api/pulse', { lack: 1, left_out: 1, isolated: 1 }],
+    ['/api/answers', { text: 'hello' }],
+    ['/api/experiment/start', { connected: 3, mood: 3, stress: 3, actions: ['talk_new', 'reach_out'] }],
+    [`/api/experiment/${expCode}/finish`, { connected: 4, mood: 4, stress: 2 }],
+    ['/api/admin/answers/1', { status: 'approved' }],
+  ];
+  for (const [path, body] of posts) {
+    const res = await call(env, 'POST', path, { body, now: later, headers: { Authorization: 'Bearer test-token' } });
+    assert.equal(res.status, 429, path);
+    assert.equal(await code(res), 'rate_limited');
+  }
+  assert.deepEqual(await all('SELECT * FROM counters'), []);
+  assert.deepEqual(await all('SELECT * FROM pulse'), []);
+  assert.deepEqual(await all('SELECT text, status FROM answers'), [{ text: 'x', status: 'pending' }]);
+  assert.deepEqual(await all('SELECT * FROM experiment'), before);
+});

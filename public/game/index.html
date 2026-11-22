@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wire the Brain: a 60-second game</title>
+<meta name="description" content="Catch small social moments to wire a teenage brain together. A 60-second game from Project Reach Out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/game/game.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/game/game.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main>
+
+<section id="start" class="wrap game-start" aria-labelledby="start-title">
+  <p class="eyebrow">A 60-second game</p>
+  <h1 id="start-title">Wire the Brain</h1>
+  <div class="stack game-how">
+    <p>You are a teenage brain. Small moments with other people pop up for a few seconds.</p>
+    <p class="muted">Tap one before it fades to wire two neurons together. Miss it and a link gets pruned.</p>
+  </div>
+  <div><button type="button" class="btn" id="start-btn">Start</button></div>
+</section>
+
+<section id="play" class="game-play" aria-label="Wire the Brain, playing" hidden>
+  <div class="play-top">
+    <a class="play-close" href="/" aria-label="Leave game">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4 L14 14 M14 4 L4 14"/></svg>
+    </a>
+    <p class="play-title">Wire the Brain</p>
+    <p class="play-timer"><span class="visually-hidden">Time left </span><span id="timer">1:00</span></p>
+  </div>
+  <div class="play-tiles">
+    <p class="tile"><span class="tile-label">Connections</span><span class="tile-num tile-connect" id="connections">0</span></p>
+    <p class="tile"><span class="tile-label">Pruned</span><span class="tile-num" id="pruned">0</span></p>
+  </div>
+  <div class="board" id="board" tabindex="-1">
+    <svg class="brain" id="brain" role="img" aria-label="A brain made of neurons. None are linked yet." viewBox="0 0 342 470" fill="none">
+      <path class="brain-outline" d="M171 70 C80 60 40 130 52 200 C30 250 60 330 120 340 C140 400 220 400 236 340 C300 330 320 250 296 200 C310 130 262 60 171 70 Z"/>
+      <g class="edges"></g>
+      <g class="neurons"></g>
+    </svg>
+  </div>
+  <p class="play-hint">Tap a moment before it fades. Each one you catch wires two neurons together. Miss it and a link gets pruned.</p>
+</section>
+
+<section id="end" class="wrap game-end" aria-labelledby="end-title" hidden>
+  <p class="eyebrow">Round over</p>
+  <h2 id="end-title" tabindex="-1">Your brain map</h2>
+  <div class="end-map" id="end-map"></div>
+  <div class="play-tiles">
+    <p class="tile"><span class="tile-label">Connections</span><span class="tile-num tile-connect" id="end-connections">0</span></p>
+    <p class="tile"><span class="tile-label">Pruned</span><span class="tile-num" id="end-pruned">0</span></p>
+  </div>
+  <p class="end-line" id="end-line"></p>
+  <p class="end-note muted">This is a picture of an idea, not a brain scan. In a real brain, connections that get used are kept and the ones that do not get used are trimmed away, and a lot of that trimming happens in the teen years (<a href="/science/#ref-blakemore2014">Blakemore &amp; Mills, 2014</a>).</p>
+  <div class="actions">
+    <button type="button" class="btn" id="again-btn">Play again</button>
+    <a class="btn-ghost" href="/experiment/">Take the 24-hour challenge</a>
+    <a class="btn-ghost" href="/science/">See the science</a>
+  </div>
+</section>
+
+<p class="visually-hidden" id="live" aria-live="polite"></p>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

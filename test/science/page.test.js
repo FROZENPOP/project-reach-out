@@ -89,6 +89,7 @@ test('7. safety lines, shared header and footer, CSP-safe markup, accessible fig
   assert.match(html, /<site-header><\/site-header>/);
   assert.match(html, /<site-footer><\/site-footer>/);
   assert.doesNotMatch(html, /\sstyle\s*=/i);
+  assert.doesNotMatch(html, /<style[\s>]/i, 'inline <style> block');
   assert.doesNotMatch(html, /\son[a-z]+\s*=/i);
   for (const [, attrs, inner] of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
     assert.match(attrs, /\ssrc=/, 'script without src');
@@ -100,12 +101,16 @@ test('7. safety lines, shared header and footer, CSP-safe markup, accessible fig
   assert.match(svg[1], /aria-label="[^"]*\S[^"]*"/);
 });
 
-test('8. no number in the page text outside the brief and references.json', () => {
-  // Numbers the brief allows on this page.
-  const brief = ['10', '40', '63', '51,000', '36', '37', '2012', '2018', '15', '16', '24', '70%', '2003', '148', '50%', '988', '30'];
+test('8. no number in the page text outside the brief', () => {
+  // Literal numbers from the brief: findings, 988, the 30-second and 24-hour links,
+  // and the years of the brief's reference ids (blakemore2014 ... osg2023), used in citations.
+  const allowed = new Set([
+    '10', '40', '63', '51,000', '36', '37', '2012', '2018', '15', '16', '24', '70%', '2003', '148', '50%', '988', '30',
+    '2010', '2014', '2019', '2020', '2021', '2023',
+  ]);
   const tokens = (s) => s.match(/\d[\d,.]*\d%?|\d%?/g) ?? [];
-  const allowed = new Set([...brief, ...refs.flatMap((r) => tokens(`${r.apa} ${r.url}`))]);
-  const body = text(html.replace(/<head>[\s\S]*?<\/head>/, ''));
+  // The reference list is checked word for word against references.json in test 1, so it is left out here.
+  const body = text(html.replace(/<head>[\s\S]*?<\/head>/, '').replace(/<ul class="refs">[\s\S]*?<\/ul>/, ''));
   const stray = tokens(body).filter((n) => !allowed.has(n));
   assert.deepEqual(stray, []);
 });

@@ -59,8 +59,8 @@ test('5. home page names both factors word for word with citations and a link to
   const html = await read('public/index.html');
   assert.match(html, /<h3>The risk: isolation<\/h3>/);
   assert.match(html, /<h3>The protection: connection<\/h3>/);
-  assert.ok(html.includes('Spending a lot of time cut off from other people makes anxiety and depression more likely, and the teenage brain is especially sensitive to it. (<a href="/science/#ref-loades2020">Loades et al., 2020</a>; <a href="/science/#ref-orben2020">Orben et al., 2020</a>)'));
-  assert.ok(html.includes('Supportive relationships with friends, family and trusted adults, and feeling that you belong at school, make those problems less likely. (<a href="/science/#ref-samhsa2019">Substance Abuse and Mental Health Services Administration, 2019</a>)'));
+  assert.ok(html.includes('Spending a lot of time cut off from other people makes anxiety and depression more likely, and the teenage brain is especially sensitive to it (<a href="/science/#ref-loades2020">Loades et al., 2020</a>; <a href="/science/#ref-orben2020">Orben et al., 2020</a>).'));
+  assert.ok(html.includes('Supportive relationships with friends, family and trusted adults, and feeling that you belong at school, make those problems less likely (<a href="/science/#ref-samhsa2019">Substance Abuse and Mental Health Services Administration, 2019</a>).'));
   assert.match(html, /<a href="\/science\/">See the research<\/a>/);
   assert.ok(html.indexOf('The risk: isolation') > html.indexOf('</h1>') && html.indexOf('The risk: isolation') < html.indexOf('id="codes-title"'));
   assert.equal(html.match(/<h1[\s>]/g).length, 1);

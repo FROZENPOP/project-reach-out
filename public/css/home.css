@@ -1,0 +1,16 @@
+/* Home page layout only; components come from site.css. */
+.hero { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; padding: 56px 0 72px; }
+.hero-text { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.hero-lede { color: var(--muted); font-size: 1.1875rem; max-width: 34rem; }
+.hero-art { flex: 1 1 340px; min-width: 0; max-width: 480px; }
+.codes { padding: 24px 0 72px; display: flex; flex-direction: column; gap: 28px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+.tile-num { font-family: var(--font-head); color: var(--connect); font-weight: 700; }
+.tile-title { font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; }
+.experiment { margin-bottom: 72px; }
+.experiment-lede { max-width: 40rem; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
+.steps li { display: flex; flex-direction: column; gap: 6px; }
+.step-title { font-family: var(--font-head); font-weight: 700; color: var(--signal); }
+.not-found { padding-top: 72px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+@media (max-width: 480px) { .hero { padding: 32px 0 56px; gap: 32px; } }

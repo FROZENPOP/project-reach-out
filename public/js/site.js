@@ -65,18 +65,45 @@ const NAV = [
 
 const LOGO = '<svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#FFB547" stroke-width="2"><circle cx="6" cy="20" r="3.5"/><circle cx="22" cy="8" r="3.5" fill="#FFB547"/><path d="M9 18 L19 10"/></svg>';
 
+// Header markup for the current path (pure, like footerHtml). Static strings only.
+export function headerHtml(path = '') {
+  const links = NAV.map(([href, label]) => `<a href="${href}"${path.startsWith(href) ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  return `<header class="site-header">
+  <a class="site-logo" href="/">${LOGO}Reach Out</a>
+  <button class="btn-ghost menu-btn" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+  <nav class="site-nav" id="site-menu" aria-label="Main">${links}</nav>
+</header>`;
+}
+
+// Next aria-expanded value ('true' or 'false') for the phone menu after an action: 'toggle' or 'escape'.
+export const nextMenuState = (expanded, action) => (action === 'toggle' && expanded !== 'true' ? 'true' : 'false');
+
+// True when none of the page's <link rel> values is an icon, so site.js should add /favicon.svg.
+export const needsIconLink = (rels) => !rels.some((rel) => /(^|\s)icon(\s|$)/i.test(rel));
+
 if (globalThis.customElements) {
+  if (needsIconLink([...document.querySelectorAll('link[rel]')].map((l) => l.rel))) {
+    document.head.insertAdjacentHTML('beforeend', '<link rel="icon" type="image/svg+xml" href="/favicon.svg">');
+  }
+
   customElements.define('site-header', class extends HTMLElement {
     connectedCallback() {
       this.classList.add('wrap');
-      // Static markup only; no data-file text.
-      this.innerHTML = `<header class="site-header">
-  <a class="site-logo" href="/">${LOGO}Reach Out</a>
-  <nav class="site-nav" aria-label="Main">${NAV.map(([href, label]) => `<a href="${href}">${label}</a>`).join('')}</nav>
-</header>`;
-      for (const link of this.querySelectorAll('.site-nav a')) {
-        if (location.pathname.startsWith(link.getAttribute('href'))) link.setAttribute('aria-current', 'page');
-      }
+      this.innerHTML = headerHtml(location.pathname);
+      const header = this.querySelector('.site-header');
+      const button = this.querySelector('.menu-btn');
+      const set = (action) => {
+        const value = nextMenuState(button.getAttribute('aria-expanded'), action);
+        button.setAttribute('aria-expanded', value);
+        header.classList.toggle('menu-open', value === 'true');
+      };
+      button.addEventListener('click', () => set('toggle'));
+      // On document: Safari does not focus a button on click, so focus may be on <body>.
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || button.getAttribute('aria-expanded') !== 'true') return;
+        set('escape');
+        button.focus();
+      });
     }
   });
 

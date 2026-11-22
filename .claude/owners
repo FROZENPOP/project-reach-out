@@ -1,5 +1,6 @@
-api src/* src/worker/* src/worker/lib/* src/worker/routes/* migrations/* test/api/* test/helpers/*
+api-hardening src/* src/worker/* src/worker/lib/* src/worker/routes/* migrations/* test/api/* test/helpers/*
 qr-pages public/fact/* public/challenge/* public/pulse/* public/listen/* public/your-turn/* public/posters/* public/vendor/* test/qr-pages/*
 science public/science/* test/science/*
 game public/game/* test/game/*
 experiment-ui public/experiment/* public/results/* public/admin/* test/experiment-ui/*
+polish public/index.html public/404.html public/css/* public/js/* public/favicon.svg test/skeleton/* test/polish/*

@@ -3,6 +3,10 @@ import { rateLimit } from './lib/limit.js';
 import qr from './routes/qr.js';
 import count from './routes/count.js';
 import results from './routes/results.js';
+import pulse from './routes/pulse.js';
+import answers from './routes/answers.js';
+import * as experiment from './routes/experiment.js';
+import * as admin from './routes/admin.js';
 
 // [method, path pattern, handler]. Capture groups arrive as `params`.
 // A handler gets { request, env, params, now } and returns a Response or throws HttpError.
@@ -10,10 +14,17 @@ export const routes = [
   ['GET', /^\/q\/(.*)$/, qr],
   ['POST', /^\/api\/count$/, count],
   ['GET', /^\/api\/results$/, results],
+  ['POST', /^\/api\/pulse$/, pulse],
+  ['POST', /^\/api\/answers$/, answers],
+  ['POST', /^\/api\/experiment\/start$/, experiment.start],
+  ['GET', /^\/api\/experiment\/([^/]+)$/, experiment.status],
+  ['POST', /^\/api\/experiment\/([^/]+)\/finish$/, experiment.finish],
+  ['GET', /^\/api\/admin\/answers$/, admin.listAnswers],
+  ['POST', /^\/api\/admin\/answers\/(\d+)$/, admin.setAnswer],
+  ['GET', /^\/api\/admin\/export\.csv$/, admin.exportCsv],
 ];
 
-export async function handle(request, env, now = new Date()) {
-  const { pathname } = new URL(request.url);
+async function route(request, env, now, pathname) {
   try {
     for (const [method, pattern, handler] of routes) {
       const match = request.method === method && pathname.match(pattern);
@@ -27,6 +38,13 @@ export async function handle(request, env, now = new Date()) {
     console.error(err);
     return errorResponse(500, 'internal', 'Something went wrong.');
   }
+}
+
+export async function handle(request, env, now = new Date()) {
+  const { pathname } = new URL(request.url);
+  const res = await route(request, env, now, pathname);
+  if (pathname.startsWith('/api/admin/')) res.headers.set('Cache-Control', 'no-store');
+  return res;
 }
 
 export default {

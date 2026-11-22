@@ -78,7 +78,8 @@ QR codes encode `<origin>/q/<n>`, never the page URL, so pages can move.
 
 JSON in, JSON out. Errors are `{ "error": { "code": "snake_case", "message": "..." } }`
 with the right status: 400 `invalid_body`, 401 `unauthorized`, 404 `not_found`,
-409 (`too_early`, `already_finished`, `expired`), 429 `rate_limited`, 500 `internal`.
+409 (`too_early`, `already_finished`, `expired`), 413 `too_large` (body over 4096 bytes),
+429 `rate_limited`, 500 `internal`.
 
 | Route | Body | Success |
 |---|---|---|

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Listen | Reach Out</title>
+<meta name="description" content="A short clip from our podcast on loneliness and the teenage brain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/fact/qr.css">
+<link rel="stylesheet" href="/listen/listen.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/listen/page.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap qr">
+  <div class="qr-top">
+    <p class="eyebrow">Our podcast</p>
+    <p class="qr-code-num">Code 4 of 6</p>
+  </div>
+  <div class="qr-body" aria-live="polite">
+    <h1>Listen</h1>
+    <h2 id="listen-title" class="listen-title" hidden></h2>
+    <div id="listen-player" class="listen-player" hidden></div>
+    <p id="listen-summary" class="muted" hidden></p>
+    <p id="listen-status" class="muted">Loading the clip…</p>
+    <p id="listen-error" class="alert" role="alert"></p>
+  </div>
+  <div class="qr-actions">
+    <a id="listen-link" class="btn-ghost" href="/listen/" hidden>Listen to the clip</a>
+    <a class="btn" href="/science/">See the science</a>
+  </div>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Did you know? | Reach Out</title>
+<meta name="description" content="One 20-second fact about what other people do for a growing brain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/fact/qr.css">
+<link rel="stylesheet" href="/fact/fact.css">
+<script type="module" src="/js/site.js"></script>
+<script type="module" src="/fact/page.js"></script>
+</head>
+<body>
+<site-header></site-header>
+<main class="wrap qr">
+  <div class="qr-top">
+    <p class="eyebrow">Did you know?</p>
+    <p class="qr-code-num">Code 1 of 6</p>
+  </div>
+  <div class="fact-bar" aria-hidden="true"><span id="fact-bar"></span></div>
+  <div class="qr-body" aria-live="polite">
+    <h1 id="fact-text">Loading a fact…</h1>
+    <p id="fact-detail" class="muted"></p>
+    <p class="qr-small"><a id="fact-cite" href="/science/" hidden></a></p>
+    <p id="fact-error" class="alert" role="alert"></p>
+  </div>
+  <div class="qr-actions">
+    <a class="btn" href="/challenge/">Try a 30-second challenge</a>
+    <button class="btn-ghost" type="button" id="fact-next" disabled>Another fact</button>
+    <a class="qr-link" href="/science/">See the science behind this</a>
+  </div>
+</main>
+<site-footer></site-footer>
+</body>
+</html>

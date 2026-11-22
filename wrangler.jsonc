@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "project-reach-out",
+  "main": "src/worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // The Worker only sees these paths; everything else is served straight from public/.
+    "run_worker_first": ["/api/*", "/q/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "reach-out", "migrations_dir": "migrations" }
+  ],
+  "ratelimits": [
+    { "name": "LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
+  ],
+  "observability": { "enabled": true }
+}

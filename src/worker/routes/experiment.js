@@ -64,11 +64,12 @@ export async function status({ env, params: [raw], now }) {
 
 // POST /api/experiment/:code/finish { connected, mood, stress }
 export async function finish({ request, env, params: [raw], now }) {
+  const body = await readJson(request); // first, so an oversized body is 413 in every state
   const row = await find(env, raw);
   if (row.finished_at) throw alreadyFinished();
   if (isExpired(row, now)) throw expired();
   if (now < readyAt(row)) throw new HttpError(409, 'too_early', 'Come back after the ready time.');
-  const post = scales(await readJson(request));
+  const post = scales(body);
   const { meta } = await env.DB.prepare(
     'UPDATE experiment SET finished_at = ?, post_connected = ?, post_mood = ?, post_stress = ? WHERE code = ? AND finished_at IS NULL',
   ).bind(now.toISOString(), post.connected, post.mood, post.stress, row.code).run();

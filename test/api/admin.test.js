@@ -1,6 +1,7 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { makeEnv, call } from '../helpers/env.js';
+import { routes } from '../../src/worker/index.js';
 
 let env, dispose;
 beforeEach(async () => ({ env, dispose } = await makeEnv()));
@@ -32,13 +33,17 @@ function parseCsv(text) {
   return rows;
 }
 
-const ROUTES = [
-  ['GET', '/api/admin/answers'],
-  ['POST', '/api/admin/answers/1', { status: 'approved' }],
-  ['GET', '/api/admin/export.csv?table=answers'],
-];
+// Every admin route in the router's own table, as a concrete path (capture groups filled with 1).
+const ADMIN_ROUTES = routes
+  .filter(([, pattern]) => pattern.source.startsWith(String.raw`^\/api\/admin\/`))
+  .map(([method, pattern]) => {
+    const path = pattern.source.replaceAll(String.raw`(\d+)`, '1').replace(/^\^|\$$/g, '').replaceAll('\\', '');
+    assert.match(path, pattern, `cannot build a sample path for ${pattern}`);
+    return [method, path];
+  });
 
-test('15. every admin route is 401 without a header, with a wrong token, or when ADMIN_TOKEN is empty; 200 with the right token', async () => {
+test('15. every admin route in the router is 401 without a header, with a wrong token, or when ADMIN_TOKEN is empty; passes with the right token', async () => {
+  assert.ok(ADMIN_ROUTES.length >= 3, 'router table has the admin routes');
   await addAnswer(0, 'hi');
   const cases = [
     [{}, env.ADMIN_TOKEN],
@@ -49,7 +54,8 @@ test('15. every admin route is 401 without a header, with a wrong token, or when
     [{ Authorization: 'Bearer test-token' }, ''],
     [{ Authorization: 'Bearer undefined' }, undefined],
   ];
-  for (const [method, path, body] of ROUTES) {
+  for (const [method, path] of ADMIN_ROUTES) {
+    const body = method === 'POST' ? { status: 'approved' } : undefined;
     for (const [headers, token] of cases) {
       const res = await call({ ...env, ADMIN_TOKEN: token }, method, path, { body, headers });
       assert.equal(res.status, 401, `${method} ${path} ${JSON.stringify(headers)} token=${token}`);
@@ -57,8 +63,32 @@ test('15. every admin route is 401 without a header, with a wrong token, or when
       assert.equal(res.headers.get('Cache-Control'), 'no-store');
     }
     const ok = await admin(method, path, { body });
-    assert.equal(ok.status, 200, `${method} ${path}`);
+    assert.notEqual(ok.status, 401, `${method} ${path}`);
     assert.equal(ok.headers.get('Cache-Control'), 'no-store');
+  }
+  assert.equal((await admin('GET', '/api/admin/export.csv?table=answers')).status, 200);
+  assert.equal((await admin('POST', '/api/admin/answers/1', { body: { status: 'approved' } })).status, 200);
+});
+
+test('15b. the router guards /api/admin/ itself: a handler with no auth is 401 without the token; an unknown admin path is 401, then 404', async (t) => {
+  let ran = 0;
+  routes.push(['GET', /^\/api\/admin\/throwaway$/, () => { ran++; return new Response('open'); }]);
+  t.after(() => routes.pop());
+
+  let res = await call(env, 'GET', '/api/admin/throwaway');
+  assert.equal(res.status, 401);
+  assert.equal(await errCode(res), 'unauthorized');
+  assert.equal(ran, 0, 'handler must not run without the token');
+  assert.equal((await admin('GET', '/api/admin/throwaway')).status, 200);
+  assert.equal(ran, 1);
+
+  for (const method of ['GET', 'POST']) {
+    res = await call(env, method, '/api/admin/nope');
+    assert.equal(res.status, 401, method);
+    assert.equal(await errCode(res), 'unauthorized');
+    res = await admin(method, '/api/admin/nope');
+    assert.equal(res.status, 404, method);
+    assert.equal(await errCode(res), 'not_found');
   }
 });
 
@@ -139,4 +169,11 @@ test('17. each export has the right header and row count; quoting round-trips; f
     assert.equal(res.status, 400, q);
     assert.equal(await errCode(res), 'invalid_body');
   }
+});
+
+test('17b. CSV cells starting with a tab or a carriage return get one leading single quote', async () => {
+  await addAnswer(0, '\t=1+1');
+  await addAnswer(1, '\rcmd');
+  const rows = parseCsv(await (await admin('GET', '/api/admin/export.csv?table=answers')).text());
+  assert.deepEqual(rows.slice(1).map((r) => r[2]), ["'\t=1+1", "'\rcmd"]);
 });

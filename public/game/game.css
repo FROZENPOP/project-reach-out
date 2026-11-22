@@ -1,0 +1,84 @@
+/* Wire the Brain: page layout and game pieces. Components and tokens come from site.css. */
+[hidden] { display: none !important; }
+/* The play area and the end heading take focus from script only (tabindex="-1"), to place the
+   keyboard; they are not controls, so no ring. Buttons and links keep site.css's ring. */
+[tabindex="-1"]:focus, [tabindex="-1"]:focus-visible { outline: none; }
+
+/* Start and end */
+.game-start, .game-end { display: flex; flex-direction: column; gap: 24px; padding-top: 48px; padding-bottom: 72px; max-width: 640px; }
+.game-how { font-size: 1.125rem; gap: 12px; }
+.end-map { position: relative; overflow: hidden; aspect-ratio: 342 / 470; width: min(100%, 360px); align-self: center; border-radius: 20px; border: 1px solid var(--line); background: var(--board); }
+.end-map svg { display: block; width: 100%; height: 100%; }
+.end-line { font: 700 1.25rem/1.35 var(--font-head); }
+.end-note { font-size: 0.9375rem; }
+@media (max-width: 480px) { .game-start, .game-end { padding-top: 24px; padding-bottom: 48px; } }
+
+/* Play: one screen, no scroll */
+:root { --board: color-mix(in srgb, var(--ground) 62%, var(--surface)); }
+body.is-playing { overflow: hidden; }
+.game-play {
+  display: flex; flex-direction: column; gap: 16px;
+  height: 100vh; height: 100dvh;
+  max-width: 560px; margin: 0 auto; padding: 24px;
+}
+@media (max-width: 480px), (max-height: 700px) { .game-play { padding: 16px; gap: 12px; } }
+.play-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.play-close {
+  display: flex; align-items: center; justify-content: center; flex: none;
+  width: 44px; height: 44px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line-strong); color: var(--text);
+}
+.play-close:hover { border-color: var(--connect); color: var(--text); }
+.play-title, .play-timer { font: 700 1.125rem var(--font-head); }
+.play-timer { color: var(--signal); min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.play-tiles { display: flex; gap: 12px; }
+.tile {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 12px 16px; border-radius: var(--radius-control);
+  background: var(--surface); border: 1px solid var(--line);
+}
+.tile-label { color: var(--muted); font-size: 0.8125rem; }
+.tile-num { font: 700 1.5rem/1.3 var(--font-head); }
+.tile-connect { color: var(--connect); }
+.play-hint { color: var(--muted); text-align: center; font-size: 0.9375rem; line-height: 1.45; }
+
+.board {
+  position: relative; flex: 1; min-height: 0;
+  border-radius: 20px; background: var(--board); border: 1px solid var(--line);
+  overflow: hidden;
+}
+.brain { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* The brain map */
+.brain-outline { stroke: var(--line); stroke-width: 2; }
+.edge { stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.edge.is-lit { stroke: var(--connect); stroke-width: 2.5; stroke-dasharray: none; }
+.edge.just-lit { animation: light 260ms ease-out; }
+.edge.just-pruned { animation: prune 260ms ease-out; }
+.neuron { fill: var(--surface); stroke: var(--line-strong); stroke-width: 2; transition: fill 200ms ease-out, stroke 200ms ease-out; }
+.neuron.is-lit { fill: var(--connect); stroke: var(--connect); }
+@keyframes light { from { stroke-width: 7; opacity: 0.4; } }
+@keyframes prune { from { stroke: var(--connect); stroke-width: 4; stroke-dasharray: none; opacity: 1; } 60% { opacity: 0.3; } }
+
+/* Moments */
+.moment {
+  position: absolute; max-width: 70%; min-height: 44px;
+  padding: 6px 16px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--signal); background: var(--ground); color: var(--text);
+  font: 500 0.875rem/1.25 var(--font-body); text-align: left;
+  cursor: pointer; touch-action: manipulation; overflow: hidden;
+  animation: pop 200ms ease-out, drift 2.6s ease-in-out 200ms infinite alternate;
+}
+.moment:hover { border-color: var(--connect); }
+.moment.is-fading { border-color: var(--line-strong); color: var(--muted); }
+.moment-life { display: none; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 3px; }
+.moment-life span { display: block; height: 100%; border-radius: 2px; background: var(--signal); }
+@keyframes pop { from { transform: scale(0.85); opacity: 0; } }
+@keyframes drift { to { transform: translateY(-5px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .moment, .edge { animation: none !important; }
+  .neuron { transition: none; }
+  .moment { opacity: 1 !important; padding-bottom: 10px; }
+  .moment-life { display: block; }
+}

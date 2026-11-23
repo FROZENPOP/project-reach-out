@@ -9,8 +9,8 @@ test('10. site.css defines every ARCHITECTURE.md token with its value', async ()
   const css = await read('public/css/site.css');
   const root = css.match(/:root\s*\{([^}]*)\}/)[1];
   const tokens = {
-    '--ground': '#0F1226', '--surface': '#191D3A', '--line': '#2C3260', '--line-strong': '#4A5296',
-    '--text': '#F3F4FB', '--muted': '#B4B9DA', '--connect': '#FFB547', '--signal': '#7AD7FF', '--before': '#5B64B8',
+    '--ground': '#0F2615', '--surface': '#173520', '--line': '#2A5434', '--line-strong': '#519759',
+    '--text': '#F4F8F2', '--muted': '#B9D0BC', '--connect': '#F1989A', '--signal': '#A8E0AE', '--before': '#6F9476',
   };
   for (const [name, value] of Object.entries(tokens)) {
     const declared = root.match(new RegExp(`(?:^|[;\\s])${name}:([^;]*);`));

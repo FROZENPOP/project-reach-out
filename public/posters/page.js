@@ -24,10 +24,16 @@ for (const [n, title] of CODES) {
 
   const card = document.createElement('article');
   card.className = 'poster-card';
+  const logo = Object.assign(document.createElement('img'), { className: 'poster-logo', src: '/img/logo-128.png', width: 128, height: 128, alt: '' });
   const num = Object.assign(document.createElement('p'), { className: 'poster-num', textContent: String(n).padStart(2, '0') });
   const h = Object.assign(document.createElement('h2'), { className: 'poster-title', textContent: title });
   const link = Object.assign(document.createElement('p'), { className: 'poster-url', textContent: url });
-  card.append(num, h, svg, link);
+  // Logo beside the number and title, so the printed card keeps room for a 2.1 in code.
+  const heading = Object.assign(document.createElement('div'), { className: 'poster-heading' });
+  heading.append(num, h);
+  const row = Object.assign(document.createElement('div'), { className: 'poster-row' });
+  row.append(logo, heading);
+  card.append(row, svg, link);
   grid.append(card);
 }
 

@@ -1,17 +1,17 @@
 /* Project Reach Out design system. The tokens are the only colour source; see ARCHITECTURE.md "UI". */
 
 :root {
-  --ground: #0F1226;
-  --surface: #191D3A;
-  --line: #2C3260;
-  --line-strong: #4A5296;
-  --text: #F3F4FB;
-  --muted: #B4B9DA;
-  --connect: #FFB547;
-  --signal: #7AD7FF;
-  --before: #5B64B8;
+  --ground: #0F2615;
+  --surface: #173520;
+  --line: #2A5434;
+  --line-strong: #519759;
+  --text: #F4F8F2;
+  --muted: #B9D0BC;
+  --connect: #F1989A;
+  --signal: #A8E0AE;
+  --before: #6F9476;
 
-  --connect-hover: #FFD08A;
+  --connect-hover: #F7BEBF;
   --font-head: 'Space Grotesk', system-ui, sans-serif;
   --font-body: Inter, system-ui, sans-serif;
   --radius-control: 12px;

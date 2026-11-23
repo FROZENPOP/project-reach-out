@@ -32,7 +32,8 @@ a CMS, a build step, a frontend framework.
 | `public/game/` | Wire the Brain | `game` |
 | `public/experiment/`, `public/results/`, `public/admin/` | 24-hour experiment, results graph, moderation | `experiment-ui` |
 | `test/<task>/` | Each task's tests | that task |
-| `package.json`, `wrangler.jsonc`, `.github/`, `public/data/*.json`, `docs/`, `ARCHITECTURE.md` | Shared config and canonical content | architect |
+| `package.json`, `wrangler.jsonc`, `.github/`, `public/data/*.json`, `public/img/`, `docs/`, `ARCHITECTURE.md` | Shared config, canonical content and the logo files | architect |
+| `public/css/`, `public/js/`, `public/index.html`, `public/404.html`, `public/favicon.svg`, `public/science/`, `public/posters/`, `test/skeleton/`, `test/polish/`, `test/rebrand/` | Green and pink rebrand with the logo (task in progress) | `rebrand` |
 
 `.claude/owners` is the enforced version of this table.
 
@@ -201,35 +202,49 @@ Stack: hand-written HTML and CSS, custom elements for the header and footer, no
 component library. Mockups (home, fact, game, check-in, results):
 https://claude.ai/artifact/JmjS4rXPn1qhA8MJbqmwF4, and the same five files are in
 `docs/mockups/*.dc.html` (read the markup inside `<x-dc>`; the inline styles are the
-spec for layout, sizes and copy). There is no separate design-system
+spec for layout, sizes and copy). The mockups predate the rebrand: take layout from
+them and every colour from the tokens below. There is no separate design-system
 artifact; the tokens below are the design system and `public/css/site.css` is their
 only implementation.
 
-Direction: "the network lights up". A dark, quiet ground stands for a brain alone;
-amber is connection. Things that are connected, chosen or done glow amber; things
-that are not yet are dim indigo outlines. Flat fills, thin lines, dots joined by
-lines as the one recurring motif. No gradients, no drop shadows, no emoji, no stock
-photos.
+Logo: the team's round "Reach Out Project" badge (pink brain on two greens).
+`public/img/logo-512.png` and `public/img/logo-128.png`, transparent outside the
+circle; never recolour, stretch or crop it. The 128 px file is the header mark (shown
+at 40 px) and the favicon; the 512 px file is the large version (home hero, at most
+320 px wide). Colours below are sampled from it: the logo's inner green is the
+ground, its pink brain is connection, its ring green is `--line-strong`.
+
+Direction: "the network lights up", in the logo's colours. A deep green ground stands
+for a brain alone; pink is connection. Things that are connected, chosen or done glow
+pink; things that are not yet are dim green outlines. Flat fills, thin lines, dots
+joined by lines as the recurring motif. No gradients, no drop shadows, no emoji, no
+stock photos.
 
 | Token | Value | Use |
 |---|---|---|
-| `--ground` | `#0F1226` | page background |
-| `--surface` | `#191D3A` | cards, panels |
-| `--line` | `#2C3260` | borders, dim links |
-| `--line-strong` | `#4A5296` | control outlines |
-| `--text` | `#F3F4FB` | text |
-| `--muted` | `#B4B9DA` | secondary text |
-| `--connect` | `#FFB547` | primary action, selected, connected (text on it is `--ground`) |
-| `--signal` | `#7AD7FF` | eyebrow labels, timers, focus ring |
-| `--before` | `#5B64B8` | "before" series in charts |
+| `--ground` | `#0F2615` | page background |
+| `--surface` | `#173520` | cards, panels |
+| `--line` | `#2A5434` | borders, dim links |
+| `--line-strong` | `#519759` | control outlines (the logo's ring) |
+| `--text` | `#F4F8F2` | text |
+| `--muted` | `#B9D0BC` | secondary text |
+| `--connect` | `#F1989A` | primary action, selected, connected (the logo's brain; text on it is `--ground`) |
+| `--connect-hover` | `#F7BEBF` | hover on `--connect` |
+| `--signal` | `#A8E0AE` | eyebrow labels, timers, focus ring |
+| `--before` | `#6F9476` | "before" series in charts |
+
+Contrast (checked): `--text` 14.9:1 and `--muted` 9.8:1 on `--ground`; `--connect`
+7.4:1 on `--ground` and `--ground` text on `--connect` 7.4:1; `--before` 3.9:1 on
+`--surface`. Inline SVG art that cannot read a CSS variable uses these hex values
+and no others.
 
 Type: Space Grotesk 700 for headings and numbers, Inter 400/500/600 for the rest
 (Google Fonts, `system-ui` fallback). Body 16 px minimum, line-height 1.55.
 Radii: 12 px controls, 16 px cards, 24 px panels, 999 px buttons. Spacing in steps
 of 4 px. Content width 1120 px.
 
-Components in `site.css`: `.btn` (amber pill), `.btn-ghost` (outlined pill), `.card`,
-`.panel`, `.eyebrow`, `.scale` (five-button 1 to 5 picker; the chosen one is amber
+Components in `site.css`: `.btn` (pink pill), `.btn-ghost` (outlined pill), `.card`,
+`.panel`, `.eyebrow`, `.scale` (five-button 1 to 5 picker; the chosen one is pink
 and has `aria-pressed="true"`), `.alert`.
 
 Requirements: phone first, usable at 360 px wide with no sideways scroll; touch

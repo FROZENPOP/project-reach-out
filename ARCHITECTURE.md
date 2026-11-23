@@ -33,7 +33,7 @@ a CMS, a build step, a frontend framework.
 | `public/experiment/`, `public/results/`, `public/admin/` | 24-hour experiment, results graph, moderation | `experiment-ui` |
 | `test/<task>/` | Each task's tests | that task |
 | `package.json`, `wrangler.jsonc`, `.github/`, `public/data/*.json`, `public/img/`, `docs/`, `ARCHITECTURE.md` | Shared config, canonical content and the logo files | architect |
-| `public/css/`, `public/js/`, `public/index.html`, `public/404.html`, `public/favicon.svg`, `public/science/`, `public/posters/`, `test/skeleton/`, `test/polish/`, `test/rebrand/` | Green and pink rebrand with the logo (task in progress) | `rebrand` |
+| `public/css/`, `public/js/`, `public/index.html`, `public/404.html`, `public/favicon.svg`, `public/science/`, `public/posters/`, `test/skeleton/`, `test/polish/`, `test/rebrand/` | Green and pink rebrand with the logo (built by `rebrand`, merged) | `rebrand` |
 
 `.claude/owners` is the enforced version of this table.
 

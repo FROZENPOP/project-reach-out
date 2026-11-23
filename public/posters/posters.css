@@ -12,6 +12,7 @@
   text-align: center;
   break-inside: avoid;
 }
+.poster-logo { width: 56px; height: auto; }
 .poster-num { font: 700 1rem var(--font-head); letter-spacing: 0.08em; }
 .poster-title { font-size: 1.25rem; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; }
 .poster-qr { display: block; width: 100%; max-width: 220px; height: auto; }
@@ -23,9 +24,10 @@
   site-header, site-footer, #poster-print, .poster-head { display: none !important; }
   .posters { padding: 0; max-width: none; gap: 0; }
   .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 0.2in; }
-  .poster-card { height: 3.2in; padding: 0.12in; border: 1px dashed #999999; border-radius: 0; color: #000000; justify-content: center; }
+  .poster-card { height: 3.2in; padding: 0.12in; border: 1px dashed #999999; border-radius: 0; color: #000000; justify-content: center; gap: 0.04in; }
   .poster-title { min-height: 0; font-size: 14pt; }
   .poster-num { font-size: 11pt; }
-  .poster-qr { width: 2.1in; max-width: none; }
+  .poster-logo { width: 0.6in; }
+  .poster-qr { width: 1.6in; max-width: none; }
   .poster-url { font-size: 8pt; }
 }

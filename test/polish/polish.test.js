@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { headerHtml, nextMenuState, needsIconLink } from '../../public/js/site.js';
+import { headerHtml, nextMenuState, needsIconLink, ICON_LINK } from '../../public/js/site.js';
 
 const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 const TITLE = 'Reach Out: your brain is built to connect';
@@ -37,18 +37,8 @@ test('3. site.css shows the menu button below 640 px and hides it from 640 px up
   assert.doesNotMatch(css.replace(/@media[^{]*\{[\s\S]*?\n\}/g, ''), /\.menu-btn \{[^}]*display: none/, 'button hidden outside a media query');
 });
 
-test('4. favicon.svg is an svg in --connect, and the icon link is added only when none exists', async () => {
-  const svg = (await read('public/favicon.svg')).trim();
-  assert.match(svg, /^<svg\s[^>]*xmlns="http:\/\/www\.w3\.org\/2000\/svg"[^>]*>[\s\S]*<\/svg>$/);
-  assert.match(svg, /#FFB547/);
-  assert.match(svg, /#0F1226/);
-  // Well-formed: every non-self-closing tag is closed in order.
-  const stack = [];
-  for (const [, close, name, self] of svg.matchAll(/<(\/?)([a-zA-Z]+)[^>]*?(\/?)>/g)) {
-    if (close) assert.equal(stack.pop(), name);
-    else if (!self) stack.push(name);
-  }
-  assert.equal(stack.length, 0);
+test('4. the icon link is the PNG logo, added only when none exists (replaced by the rebrand; see test/rebrand/ 4)', () => {
+  assert.equal(ICON_LINK, '<link rel="icon" type="image/png" href="/img/logo-128.png">');
   assert.equal(needsIconLink([]), true);
   assert.equal(needsIconLink(['stylesheet', 'preconnect']), true);
   assert.equal(needsIconLink(['stylesheet', 'icon']), false);

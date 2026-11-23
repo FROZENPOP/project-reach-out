@@ -63,7 +63,8 @@ const NAV = [
   ['/results/', 'Results'],
 ];
 
-const LOGO = '<svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#FFB547" stroke-width="2"><circle cx="6" cy="20" r="3.5"/><circle cx="22" cy="8" r="3.5" fill="#FFB547"/><path d="M9 18 L19 10"/></svg>';
+// Decorative: the link text names it.
+const LOGO = '<img src="/img/logo-128.png" width="40" height="40" alt="">';
 
 // Header markup for the current path (pure, like footerHtml). Static strings only.
 export function headerHtml(path = '') {
@@ -78,12 +79,14 @@ export function headerHtml(path = '') {
 // Next aria-expanded value ('true' or 'false') for the phone menu after an action: 'toggle' or 'escape'.
 export const nextMenuState = (expanded, action) => (action === 'toggle' && expanded !== 'true' ? 'true' : 'false');
 
-// True when none of the page's <link rel> values is an icon, so site.js should add /favicon.svg.
+export const ICON_LINK = '<link rel="icon" type="image/png" href="/img/logo-128.png">';
+
+// True when none of the page's <link rel> values is an icon, so site.js should add the logo icon.
 export const needsIconLink = (rels) => !rels.some((rel) => /(^|\s)icon(\s|$)/i.test(rel));
 
 if (globalThis.customElements) {
   if (needsIconLink([...document.querySelectorAll('link[rel]')].map((l) => l.rel))) {
-    document.head.insertAdjacentHTML('beforeend', '<link rel="icon" type="image/svg+xml" href="/favicon.svg">');
+    document.head.insertAdjacentHTML('beforeend', ICON_LINK);
   }
 
   customElements.define('site-header', class extends HTMLElement {

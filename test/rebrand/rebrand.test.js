@@ -69,9 +69,13 @@ test('6. every poster card gets the logo; QR stays #000000 on #FFFFFF', async ()
   const js = await read('public/posters/page.js');
   const loop = js.match(/for \(const \[n, title\] of CODES\) \{([\s\S]*?)\n\}/)[1];
   assert.match(loop, /createElement\('img'\)[^\n]*src: '\/img\/logo-128\.png'/);
-  assert.match(loop, /card\.append\(logo, num, h,/);
+  assert.match(loop, /heading\.append\(num, h\);/);
+  assert.match(loop, /row\.append\(logo, heading\);/);
+  assert.match(loop, /card\.append\(row, svg, link\);/);
   assert.match(loop, /bg\.setAttribute\('fill', '#FFFFFF'\)/);
   assert.match(loop, /dark\.setAttribute\('fill', '#000000'\)/);
   const css = await read('public/posters/posters.css');
-  assert.match(css, /@media print \{[\s\S]*\.poster-logo \{ width: 0\.6in; \}/);
+  const print = css.match(/@media print \{([\s\S]*)\n\}/)[1];
+  assert.match(print, /\.poster-logo \{ width: 0\.5in; \}/);
+  assert.match(print, /\.poster-qr \{ width: 2\.1in;/);
 });

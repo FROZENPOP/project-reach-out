@@ -21,21 +21,17 @@ a CMS, a build step, a frontend framework.
 - Tests: `node --test`. API tests call the Worker's `fetch(request, env)` directly
   with a real local D1 from `getPlatformProxy()` (see `test/helpers/`).
 
-## Directories and owners
+## Directories
 
-| Path | What | Task |
-|---|---|---|
-| `public/index.html`, `public/404.html`, `public/css/`, `public/js/site.js`, `public/_headers`, `test/skeleton/`, `test/data/` | Home page, design tokens, shared header/footer, API helper (built by `skeleton`, merged) | architect |
-| `src/worker/`, `migrations/`, `test/helpers/`, `test/api/` | Worker and schema | `api` |
-| `public/fact/`, `public/challenge/`, `public/pulse/`, `public/listen/`, `public/your-turn/`, `public/posters/`, `public/vendor/` | The five QR landing pages and the printable QR sheet | `qr-pages` |
-| `public/science/` | QR 6: the science, with references | `science` |
-| `public/game/` | Wire the Brain | `game` |
-| `public/experiment/`, `public/results/`, `public/admin/` | 24-hour experiment, results graph, moderation | `experiment-ui` |
-| `test/<task>/` | Each task's tests | that task |
-| `package.json`, `wrangler.jsonc`, `.github/`, `public/data/*.json`, `public/img/`, `docs/`, `ARCHITECTURE.md` | Shared config, canonical content and the logo files | architect |
-| `public/css/`, `public/js/`, `public/index.html`, `public/404.html`, `public/favicon.svg`, `public/science/`, `public/posters/`, `test/skeleton/`, `test/polish/`, `test/rebrand/` | Green and pink rebrand with the logo (built by `rebrand`, merged) | `rebrand` |
-
-`.claude/owners` is the enforced version of this table.
+| Path | What |
+|---|---|
+| `public/` | The site: home, QR pages, science, game, experiment, results, posters, admin |
+| `public/css/`, `public/js/site.js` | Design tokens, shared header and footer, API helper |
+| `public/data/*.json` | Facts, challenges, references, team details |
+| `public/img/` | Logo files |
+| `src/worker/` | The Worker: `/api/*` and `/q/*` |
+| `migrations/` | D1 schema |
+| `test/` | Tests, one folder per area |
 
 ## Pages
 
@@ -148,7 +144,7 @@ CREATE TABLE answers (id INTEGER PRIMARY KEY, created_at TEXT NOT NULL, text TEX
 
 Timestamps are ISO 8601 UTC. `day` is `YYYY-MM-DD` UTC. `actions` is a JSON array.
 
-## Rules for builders
+## Rules for code changes
 
 Privacy and safety (the users are minors):
 - Store nothing that identifies a person: no IP, user agent, cookie, name or email.
@@ -193,19 +189,11 @@ Code:
 - Third-party code is a single vendored file in `public/vendor/` with its license.
 - `npm test` and `npm run check` exit non-zero on failure.
 
-Merge gate for every task: `npm test` and `npm run check` pass, and for UI tasks the
-PR shows each new screen at 390 px and 1280 px wide.
-
 ## UI
 
 Stack: hand-written HTML and CSS, custom elements for the header and footer, no
-component library. Mockups (home, fact, game, check-in, results):
-https://claude.ai/artifact/JmjS4rXPn1qhA8MJbqmwF4, and the same five files are in
-`docs/mockups/*.dc.html` (read the markup inside `<x-dc>`; the inline styles are the
-spec for layout, sizes and copy). The mockups predate the rebrand: take layout from
-them and every colour from the tokens below. There is no separate design-system
-artifact; the tokens below are the design system and `public/css/site.css` is their
-only implementation.
+component library. The tokens below are the design system and `public/css/site.css` is
+their only implementation.
 
 Logo: the team's round "Reach Out Project" badge (pink brain on two greens).
 `public/img/logo-512.png` and `public/img/logo-128.png`, transparent outside the

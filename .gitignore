@@ -1,4 +1,18 @@
+# Dependencies and build output
 node_modules/
-.wrangler/
-.dev.vars
 dist/
+.wrangler/
+
+# Secrets: Cloudflare local vars (ADMIN_TOKEN) and any env files
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+*.pem
+*.key
+
+# Local tool settings
+.claude/
+.vscode/
+.DS_Store
+Thumbs.db

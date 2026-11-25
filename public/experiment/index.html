@@ -30,11 +30,19 @@
 </section>
 
 <section id="view-checkin" class="exp-view" hidden>
+  <div class="panel how" aria-labelledby="how-title">
+    <h2 id="how-title">How it works</h2>
+    <p class="muted">For one day, connect with people on purpose, and see if it changes how you feel.</p>
+    <ol class="steps">
+      <li><span class="step-title">1. Check in now</span><span class="muted">Rate how connected, happy and stressed you feel. One minute.</span></li>
+      <li><span class="step-title">2. Pick two or three actions</span><span class="muted">Small things like eating with someone or a phone-free talk. You get a short code. Screenshot it.</span></li>
+      <li><span class="step-title">3. Come back tomorrow</span><span class="muted">Enter your code, answer the same three questions, and see your before and after.</span></li>
+    </ol>
+  </div>
   <form id="checkin-form" class="exp-form">
     <div class="ratings" id="pre-ratings"></div>
     <p class="muted small">By continuing you agree that your anonymous answers can be used in our HOSA project.</p>
     <p class="muted small">No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.</p>
-    <p class="muted small">Next you pick two or three actions and get a short code. Bring the code back tomorrow to check out.</p>
     <button class="btn" type="submit" id="checkin-next" disabled>Save and pick my actions</button>
   </form>
   <button type="button" class="link-btn" id="have-code" aria-expanded="false" aria-controls="code-form">I have a code</button>

@@ -7,6 +7,11 @@
 .exp-view { display: flex; flex-direction: column; gap: 20px; }
 .exp-form, .ratings { display: flex; flex-direction: column; gap: 20px; }
 .small { font-size: 0.875rem; }
+.how { display: flex; flex-direction: column; gap: 12px; }
+.how h2 { font-size: 1.25rem; }
+.steps { display: flex; flex-direction: column; gap: 14px; margin: 4px 0 0; padding: 0; list-style: none; }
+.steps li { display: flex; flex-direction: column; gap: 4px; }
+.step-title { font-family: var(--font-head); font-weight: 700; color: var(--signal); }
 .exp .scale button { min-height: 52px; background: var(--surface); }
 .exp .scale button[aria-pressed="true"] { background: var(--connect); }
 

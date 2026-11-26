@@ -1,6 +1,7 @@
 import { increment } from '../lib/counter.js';
 
-const PAGES = { 1: '/fact/', 2: '/challenge/', 3: '/pulse/', 4: '/listen/', 5: '/your-turn/', 6: '/science/' };
+// Each code opens its flyer; the flyer's button leads on to the matching page.
+const PAGES = Object.fromEntries([1, 2, 3, 4, 5, 6].map((n) => [n, `/flyer/?n=${n}`]));
 
 // GET /q/:n. Always redirects, even when the count fails.
 export default async function qr({ env, params: [n], now }) {

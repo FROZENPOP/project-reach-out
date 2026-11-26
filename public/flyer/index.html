@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR campaign | Reach Out</title>
+<meta name="description" content="Project Reach Out QR campaign: six codes around school, six small ways to connect.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/flyer/flyer.css">
+<script type="module" src="/flyer/flyer.js"></script>
+</head>
+<body class="fl-body">
+<main class="fl">
+  <!-- faint "connections" pattern: nodes joined by lines -->
+  <svg class="fl-net" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3">
+    <path d="M760 360 L960 250 L1040 470 L860 560 Z M960 250 L1060 120 M860 560 L1000 720" opacity=".7"/>
+    <path d="M40 1300 L190 1180 L330 1330 L160 1450 Z M190 1180 L120 1040" opacity=".5"/>
+    <g fill="currentColor" stroke="none">
+      <circle cx="760" cy="360" r="10"/><circle cx="960" cy="250" r="12"/><circle cx="1040" cy="470" r="9"/>
+      <circle cx="860" cy="560" r="11"/><circle cx="1000" cy="720" r="8"/><circle cx="1060" cy="120" r="8"/>
+      <circle cx="40" cy="1300" r="9"/><circle cx="190" cy="1180" r="11"/><circle cx="330" cy="1330" r="8"/>
+      <circle cx="160" cy="1450" r="10"/><circle cx="120" cy="1040" r="8"/>
+    </g>
+  </svg>
+
+  <header class="fl-top">
+    <a class="fl-brand" href="/"><img src="/img/logo-128.png" alt="">Project Reach Out</a>
+    <p class="fl-count" id="count"></p>
+  </header>
+  <div class="fl-dots" id="dots" aria-hidden="true"></div>
+
+  <p class="fl-eyebrow" id="eyebrow"></p>
+  <h1 class="fl-title" id="title"></h1>
+  <div class="fl-card" id="card"></div>
+
+  <div class="fl-cta">
+    <a class="fl-btn" id="btn" href="/"></a>
+  </div>
+
+  <footer class="fl-foot">
+    <p class="fl-hunt" id="hunt"></p>
+    <p>Follow <a href="https://www.instagram.com/project_reach.out/" rel="noopener">@project_reach.out</a> on Instagram</p>
+    <p>Need to talk? Call or text <a href="tel:988">988</a>, or talk to an adult you trust.</p>
+  </footer>
+</main>
+</body>
+</html>

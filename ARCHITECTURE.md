@@ -47,6 +47,7 @@ a CMS, a build step, a frontend framework.
 | `/game/` | Wire the Brain |
 | `/experiment/` | Check in, pick actions, get a code; come back with the code to check out |
 | `/results/` | Before/after chart, pulse results, campaign counts, approved answers |
+| `/flyer/?n=1..6` | The QR campaign flyer each code opens first, with a button to its page |
 | `/posters/` | Printable sheet of the six QR codes |
 | `/admin/` | Approve or reject answers, download CSVs. Not linked from the site |
 
@@ -80,7 +81,7 @@ with the right status: 400 `invalid_body`, 401 `unauthorized`, 404 `not_found`,
 
 | Route | Body | Success |
 |---|---|---|
-| `GET /q/:n` | | 302 to the page for QR `n` (1 fact, 2 challenge, 3 pulse, 4 listen, 5 your-turn, 6 science; anything else `/`). Adds one to `scan:<n>`. Redirects even if the write fails |
+| `GET /q/:n` | | 302 to `/flyer/?n=<n>` for QR `n` 1 to 6 (anything else `/`); each flyer's button opens its page (1 fact, 2 challenge, 3 pulse, 4 listen, 5 your-turn, 6 science). Adds one to `scan:<n>`. Redirects even if the write fails |
 | `POST /api/count` | `{ name }`, one of `challenge_done`, `game_played`, `listen_opened` | 204 |
 | `POST /api/pulse` | `{ lack, left_out, isolated }`, integers 1 to 3 | 201 `{ ok: true }` |
 | `POST /api/answers` | `{ text }`, 1 to 280 characters after trim | 201 `{ ok: true }` |

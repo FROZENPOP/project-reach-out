@@ -15,13 +15,13 @@ const quietly = async (fn) => {
   try { return await fn(); } finally { console.error = original; }
 };
 
-test('1. /q/3 redirects to /pulse/ and counts scan:3 today; /q/1..6 map to their pages', async () => {
+test('1. /q/3 redirects to flyer 3 and counts scan:3 today; /q/1..6 map to their flyers', async () => {
   const res = await call(env, 'GET', '/q/3');
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get('Location'), '/pulse/');
+  assert.equal(res.headers.get('Location'), '/flyer/?n=3');
   assert.deepEqual(await rows(), [{ name: 'scan:3', day: today(), count: 1 }]);
-  const pages = ['/fact/', '/challenge/', '/pulse/', '/listen/', '/your-turn/', '/science/'];
-  for (const [i, page] of pages.entries()) {
+  for (const i of [0, 1, 2, 3, 4, 5]) {
+    const page = `/flyer/?n=${i + 1}`;
     const r = await call(env, 'GET', `/q/${i + 1}`);
     assert.equal(r.status, 302);
     assert.equal(r.headers.get('Location'), page);
@@ -41,7 +41,7 @@ test('3. /q/1 still redirects when the database write throws', async () => {
   const broken = { ...env, DB: { prepare() { throw new Error('db down'); } } };
   const res = await quietly(() => call(broken, 'GET', '/q/1'));
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get('Location'), '/fact/');
+  assert.equal(res.headers.get('Location'), '/flyer/?n=1');
 });
 
 test('4. POST /api/count is 204 and two calls on one day give 2 in one row', async () => {

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { hasBadLanguage, BAD_LANGUAGE } from '../../public/your-turn/language.js';
+import { hasBadLanguage } from '../../public/your-turn/language.js';
 import { validateAnswer } from '../../public/your-turn/logic.js';
 
 test('bad-language check catches disguises and lets everyday words through', () => {
@@ -13,7 +13,6 @@ test('bad-language check catches disguises and lets everyday words through', () 
   for (const t of ok) assert.ok(!hasBadLanguage(t), `false alarm: ${t}`);
 });
 
-test('the form refuses bad language with the friendly message before sending', () => {
-  assert.deepEqual(validateAnswer('this is sh!t'), { ok: false, error: BAD_LANGUAGE });
-  assert.deepEqual(validateAnswer(' my friends '), { ok: true, text: 'my friends' });
+test('the form shows no warning: bad language goes to the server, which drops it', () => {
+  assert.deepEqual(validateAnswer('this is sh!t'), { ok: true, text: 'this is sh!t' });
 });

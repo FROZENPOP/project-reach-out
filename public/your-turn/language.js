@@ -1,9 +1,7 @@
-// Bad-language check for Your Turn answers. Shared by the form (public/your-turn/logic.js) and the
-// Worker (src/worker/routes/answers.js), so the server enforces the same rule the page shows.
+// Bad-language check for Your Turn answers, used by the Worker (src/worker/routes/answers.js), which
+// quietly drops answers that fail it. The form shows no warning.
 // shortcut: a word list catches common swearing, slurs and their usual disguises, not every insult;
 // answers are still read by a team member before they appear anywhere.
-
-export const BAD_LANGUAGE = 'Please keep it kind and school-appropriate. Try saying it without that language.';
 
 // Found anywhere inside a word ("bullshit", "fucking"). Only roots that are not part of everyday words.
 const ROOTS = ['fuck', 'shit', 'bitch', 'cunt', 'nigger', 'nigga', 'faggot', 'whore', 'slut', 'retard',

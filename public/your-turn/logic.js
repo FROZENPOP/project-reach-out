@@ -1,7 +1,6 @@
 // Pure logic for /your-turn/.
 import { api } from '../js/site.js';
 import { formError } from '../fact/shared.js';
-import { hasBadLanguage, BAD_LANGUAGE } from './language.js';
 
 export const MAX = 280;
 const length = (s) => [...s].length; // code points, so an emoji counts once
@@ -16,7 +15,6 @@ export function validateAnswer(text) {
   const trimmed = String(text ?? '').trim();
   if (!trimmed) return { ok: false, error: 'Write an answer first.' };
   if (length(trimmed) > MAX) return { ok: false, error: `Keep it to ${MAX} characters or fewer.` };
-  if (hasBadLanguage(trimmed)) return { ok: false, error: BAD_LANGUAGE };
   return { ok: true, text: trimmed };
 }
 

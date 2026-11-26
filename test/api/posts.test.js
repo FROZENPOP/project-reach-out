@@ -148,14 +148,15 @@ test('5. every POST route is 429 rate_limited and stores nothing when the limite
   assert.deepEqual(await all('SELECT * FROM experiment'), before);
 });
 
-test('4b. answers with swearing or slurs are 400 bad_language and never stored; clean ones save', async () => {
+test('4c. answers with swearing or slurs get the normal 201 but are never stored; clean ones save', async () => {
   for (const text of ['honestly this is bullshit', 'F U C K', 'sh1t', 'you @sshole', 'f*ck that', 'kys']) {
     const res = await call(env, 'POST', '/api/answers', { body: { text } });
-    assert.equal(res.status, 400, text);
-    assert.equal(await code(res), 'bad_language');
+    assert.equal(res.status, 201, text);
+    assert.deepEqual(await res.json(), { ok: true });
   }
   assert.deepEqual(await all('SELECT * FROM answers'), []);
   for (const text of ['Talking with my class after school', 'A peacock-themed group chat', 'Sometimes I want to kill myself, talking helps']) {
     assert.equal((await call(env, 'POST', '/api/answers', { body: { text } })).status, 201, text);
   }
+  assert.equal((await all('SELECT * FROM answers')).length, 3);
 });

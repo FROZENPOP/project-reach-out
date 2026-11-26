@@ -74,7 +74,7 @@ QR codes encode `<origin>/q/<token>`, never a page URL. Tokens are secret (`QR_K
 ### HTTP API (Worker)
 
 JSON in, JSON out. Errors are `{ "error": { "code": "snake_case", "message": "..." } }`
-with the right status: 400 `invalid_body`, 401 `unauthorized`, 404 `not_found`,
+with the right status: 400 `invalid_body` (or `bad_language` for a Your Turn answer that fails the word check), 401 `unauthorized`, 404 `not_found`,
 409 (`too_early`, `already_finished`, `expired`), 413 `too_large` (body over 4096 bytes),
 429 `rate_limited`, 500 `internal`.
 

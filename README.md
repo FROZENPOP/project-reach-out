@@ -20,7 +20,6 @@ Live: https://project-reach-out.teenmoney.workers.dev
 | `/game/` | Wire the Brain, an interactive game |
 | `/experiment/` | The 24-hour connection experiment: check in, pick actions, check out |
 | `/results/` | Before/after chart, survey results, scan counts, approved answers |
-| `/posters/` | Printable sheet of the six QR codes |
 | `/admin/` | Approve answers and download CSVs (needs the admin passphrase; not linked) |
 
 ## Privacy
@@ -41,11 +40,19 @@ Needs Node.js 20 or later.
 ```sh
 npm install
 echo "ADMIN_TOKEN=choose-a-long-random-passphrase" > .dev.vars
+echo 'QR_KEYS={"1":"a","2":"b","3":"c","4":"d","5":"e","6":"f"}' >> .dev.vars
 npx wrangler d1 migrations apply reach-out --local
 npm run dev
 ```
 
-`.dev.vars` holds the admin passphrase and is git-ignored; never commit it.
+`.dev.vars` holds the admin passphrase and the local QR tokens and is git-ignored; never commit it.
+
+## QR codes are the only way in
+
+Topics 1 to 5 (and every flyer) open only from their printed QR code. Each code encodes
+`/q/<secret token>`; the tokens live in the `QR_KEYS` Worker secret, never in this repo.
+The home page shows those topics as locked tiles. The science page stays open to everyone.
+Changing `QR_KEYS` changes the codes, so every printed code would need reprinting.
 
 ## Test
 
@@ -59,6 +66,7 @@ npm run check   # dry-run deploy
 ```sh
 npx wrangler login
 npx wrangler secret put ADMIN_TOKEN   # once
+npx wrangler secret put QR_KEYS       # once: the six secret QR tokens, as JSON
 npm run deploy                        # applies migrations, then deploys
 ```
 

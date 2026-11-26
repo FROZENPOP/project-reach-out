@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeEnv, call } from '../helpers/env.js';
+import { makeEnv, call, TEST_QR_KEYS as K } from '../helpers/env.js';
 
 let env, dispose;
 beforeEach(async () => ({ env, dispose } = await makeEnv()));
@@ -65,8 +65,8 @@ test('13. answers lists only approved texts, newest first, at most 50', async ()
 });
 
 test('14. counters still sum across days next to the new parts', async () => {
-  await call(env, 'GET', '/q/1', { now: new Date('2026-11-20T10:00:00Z') });
-  await call(env, 'GET', '/q/1', { now: new Date('2026-11-21T10:00:00Z') });
+  await call(env, 'GET', `/q/${K[1]}`, { now: new Date('2026-11-20T10:00:00Z') });
+  await call(env, 'GET', `/q/${K[1]}`, { now: new Date('2026-11-21T10:00:00Z') });
   await call(env, 'POST', '/api/count', { body: { name: 'challenge_done' } });
   const res = await call(env, 'GET', '/api/results');
   assert.equal(res.headers.get('Cache-Control'), 'public, max-age=30');

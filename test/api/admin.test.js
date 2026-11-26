@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeEnv, call } from '../helpers/env.js';
+import { makeEnv, call, TEST_QR_KEYS as K } from '../helpers/env.js';
 import { routes } from '../../src/worker/index.js';
 
 let env, dispose;
@@ -130,7 +130,7 @@ test('16. list by status, approve and reject, unknown id 404, bad status 400', a
 });
 
 test('17. each export has the right header and row count; quoting round-trips; formulas are defused', async () => {
-  await call(env, 'GET', '/q/2');
+  await call(env, 'GET', `/q/${K[2]}`);
   await call(env, 'POST', '/api/pulse', { body: { lack: 1, left_out: 2, isolated: 3 } });
   await call(env, 'POST', '/api/pulse', { body: { lack: 3, left_out: 3, isolated: 3 } });
   await call(env, 'POST', '/api/experiment/start', { body: { connected: 3, mood: 3, stress: 3, actions: ['talk_new', 'reach_out'] } });

@@ -6,7 +6,6 @@ import { pickChallenge } from '../../public/challenge/logic.js';
 import { buildPulseBody, resultsView, loadResultsView } from '../../public/pulse/logic.js';
 import { podcastView } from '../../public/listen/logic.js';
 import { validateAnswer, counterText } from '../../public/your-turn/logic.js';
-import { qrUrl, qrMatrix, qrSvgParts, QUIET } from '../../public/posters/logic.js';
 import qrcode from '../../public/vendor/qrcode.js';
 
 const json = async (path) => JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), 'utf8'));
@@ -124,49 +123,4 @@ test('7. answer validator trims and bounds by code point; counter at 0, 279, 280
   assert.equal(counterText(''), '0 of 280 characters');
   assert.equal(counterText('a'.repeat(279)), '279 of 280 characters');
   assert.equal(counterText('😀'.repeat(280)), '280 of 280 characters');
-});
-
-test('8. poster URLs are <origin>/q/<n>', () => {
-  for (let n = 1; n <= 6; n++) {
-    assert.equal(qrUrl('https://reachout.example', n), `https://reachout.example/q/${n}`);
-    assert.equal(qrUrl('http://localhost:8787', n), `http://localhost:8787/q/${n}`);
-    assert.equal(qrUrl('http://localhost:8787/', n), `http://localhost:8787/q/${n}`);
-  }
-});
-
-test('9. encoder gives a square matrix with finder patterns; the SVG adds a 4-module quiet zone', () => {
-  const m = qrMatrix('https://example.com/q/1');
-  const n = m.length;
-  assert.ok(n >= 21 && (n - 17) % 4 === 0);
-  for (const row of m) assert.equal(row.length, n);
-  // A finder pattern is a 7x7 dark ring, a light ring, and a dark 3x3 centre.
-  const finder = (r0, c0) => {
-    for (let r = 0; r < 7; r++) {
-      for (let c = 0; c < 7; c++) {
-        const ring = Math.max(Math.abs(r - 3), Math.abs(c - 3));
-        assert.equal(m[r0 + r][c0 + c], ring !== 2, `finder at ${r0},${c0} cell ${r},${c}`);
-      }
-    }
-  };
-  finder(0, 0);
-  finder(0, n - 7);
-  finder(n - 7, 0);
-
-  // Error correction level from the format bits next to the top-left finder: XOR 0x5412, top two bits are L 01, M 00, Q 11, H 10.
-  const cells = [[8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8], [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8]];
-  const level = (matrix) => ((cells.reduce((a, [r, c]) => (a << 1) | (matrix[r][c] ? 1 : 0), 0) ^ 0x5412) >> 13);
-  assert.equal(level(m), 0b00, 'level M');
-  const l = qrcode(0, 'L');
-  l.addData('https://example.com/q/1');
-  l.make();
-  const lMatrix = Array.from({ length: l.getModuleCount() }, (_, r) => Array.from({ length: l.getModuleCount() }, (_, c) => l.isDark(r, c)));
-  assert.equal(level(lMatrix), 0b01, 'the reader tells level L apart');
-
-  const { size, path } = qrSvgParts('https://example.com/q/1');
-  assert.equal(QUIET, 4);
-  assert.equal(size, n + 8);
-  const xs = [...path.matchAll(/M(\d+) (\d+)/g)].map((p) => [Number(p[1]), Number(p[2])]);
-  assert.equal(xs.length, m.flat().filter(Boolean).length);
-  assert.equal(Math.min(...xs.flat()), 4);
-  assert.equal(Math.max(...xs.flat()), n + 3);
 });

@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeEnv, call } from '../helpers/env.js';
+import { makeEnv, call, TEST_QR_KEYS as K } from '../helpers/env.js';
 import { routes } from '../../src/worker/index.js';
 
 let env, dispose;
@@ -15,33 +15,50 @@ const quietly = async (fn) => {
   try { return await fn(); } finally { console.error = original; }
 };
 
-test('1. /q/3 redirects to flyer 3 and counts scan:3 today; /q/1..6 map to their flyers', async () => {
-  const res = await call(env, 'GET', '/q/3');
+test('1. /q/<token> opens that code\'s flyer with its key and counts the scan; all six tokens map', async () => {
+  const res = await call(env, 'GET', `/q/${K[3]}`);
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get('Location'), '/flyer/?n=3');
+  assert.equal(res.headers.get('Location'), `/flyer/?n=3&k=${K[3]}`);
   assert.deepEqual(await rows(), [{ name: 'scan:3', day: today(), count: 1 }]);
-  for (const i of [0, 1, 2, 3, 4, 5]) {
-    const page = `/flyer/?n=${i + 1}`;
-    const r = await call(env, 'GET', `/q/${i + 1}`);
-    assert.equal(r.status, 302);
-    assert.equal(r.headers.get('Location'), page);
+  for (const n of [1, 2, 3, 4, 5, 6]) {
+    const r = await call(env, 'GET', `/q/${K[n]}`);
+    assert.equal(r.headers.get('Location'), `/flyer/?n=${n}&k=${K[n]}`);
   }
 });
 
-test('2. /q/9 and /q/abc redirect to / and write nothing', async () => {
-  for (const path of ['/q/9', '/q/abc']) {
+test('2. guessed codes (/q/1, /q/9, /q/abc, /q/) redirect to / and write nothing', async () => {
+  for (const path of ['/q/1', '/q/9', '/q/abc', '/q/']) {
     const res = await call(env, 'GET', path);
     assert.equal(res.status, 302);
-    assert.equal(res.headers.get('Location'), '/');
+    assert.equal(res.headers.get('Location'), '/', path);
   }
   assert.deepEqual(await rows(), []);
 });
 
-test('3. /q/1 still redirects when the database write throws', async () => {
+test('3. /q/<token> still redirects when the database write throws', async () => {
   const broken = { ...env, DB: { prepare() { throw new Error('db down'); } } };
-  const res = await quietly(() => call(broken, 'GET', '/q/1'));
+  const res = await quietly(() => call(broken, 'GET', `/q/${K[1]}`));
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get('Location'), '/flyer/?n=1');
+  assert.equal(res.headers.get('Location'), `/flyer/?n=1&k=${K[1]}`);
+});
+
+test('3b. locked pages open only with their own code\'s key; their css and js stay open', async () => {
+  const opens = async (path) => (await call(env, 'GET', path)).status === 200;
+  const pages = { 1: '/fact/', 2: '/challenge/', 3: '/pulse/', 4: '/listen/', 5: '/your-turn/' };
+  for (const [n, page] of Object.entries(pages)) {
+    assert.ok(await opens(`${page}?k=${K[n]}`), `${page} with its key`);
+    assert.ok(await opens(`${page}index.html?k=${K[n]}`), `${page}index.html with its key`);
+    for (const bad of ['', '?k=', `?k=${K[n === '1' ? 2 : 1]}`, '?k=nope']) {
+      const res = await call(env, 'GET', `${page}${bad}`);
+      assert.equal(res.status, 302, `${page}${bad}`);
+      assert.equal(res.headers.get('Location'), '/#codes');
+    }
+  }
+  for (const n of [1, 6]) assert.ok(await opens(`/flyer/?n=${n}&k=${K[n]}`), `flyer ${n}`);
+  for (const bad of ['/flyer/', '/flyer/?n=1', `/flyer/?n=2&k=${K[1]}`, `/flyer/?n=9&k=${K[1]}`, '/flyer/?n=__proto__&k=x']) {
+    assert.equal((await call(env, 'GET', bad)).status, 302, bad);
+  }
+  for (const file of ['/fact/qr.css', '/fact/shared.js', '/pulse/page.js', '/flyer/flyer.js']) assert.ok(await opens(file), file);
 });
 
 test('4. POST /api/count is 204 and two calls on one day give 2 in one row', async () => {
@@ -75,8 +92,8 @@ test('6. POST /api/count is 429 rate_limited when the limiter denies, and writes
 });
 
 test('7. GET /api/results has exactly the contract keys, sums counters across days, and caches 30 s', async () => {
-  await call(env, 'GET', '/q/1', { now: new Date('2026-11-20T10:00:00Z') });
-  await call(env, 'GET', '/q/1', { now: new Date('2026-11-21T10:00:00Z') });
+  await call(env, 'GET', `/q/${K[1]}`, { now: new Date('2026-11-20T10:00:00Z') });
+  await call(env, 'GET', `/q/${K[1]}`, { now: new Date('2026-11-21T10:00:00Z') });
   await call(env, 'POST', '/api/count', { body: { name: 'challenge_done' } });
   const res = await call(env, 'GET', '/api/results');
   assert.equal(res.status, 200);

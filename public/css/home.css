@@ -10,6 +10,8 @@
 .codes { padding: 24px 0 72px; display: flex; flex-direction: column; gap: 28px; }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
 .tile-num { font-family: var(--font-head); color: var(--connect); font-weight: 700; }
+.tile-locked { border-style: dashed; }
+.tile-lock { font-family: var(--font-head); font-weight: 700; font-size: 0.875rem; letter-spacing: .06em; text-transform: uppercase; color: var(--signal); }
 .tile-title { font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; }
 .experiment { margin-bottom: 72px; }
 .experiment-lede { max-width: 40rem; }

@@ -1,7 +1,7 @@
 import { HttpError, errorResponse } from './lib/http.js';
 import { rateLimit } from './lib/limit.js';
 import { requireAdmin } from './lib/auth.js';
-import qr from './routes/qr.js';
+import qr, { gate } from './routes/qr.js';
 import count from './routes/count.js';
 import results from './routes/results.js';
 import pulse from './routes/pulse.js';
@@ -13,6 +13,7 @@ import * as admin from './routes/admin.js';
 // A handler gets { request, env, params, now } and returns a Response or throws HttpError.
 export const routes = [
   ['GET', /^\/q\/(.*)$/, qr],
+  ['GET', /^\/(flyer|fact|challenge|pulse|listen|your-turn)\//, gate],
   ['POST', /^\/api\/count$/, count],
   ['GET', /^\/api\/results$/, results],
   ['POST', /^\/api\/pulse$/, pulse],

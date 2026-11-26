@@ -39,6 +39,7 @@ if (typeof document !== 'undefined') {
   $('title').classList.toggle('long', f.title.length > 16);
   $('card').replaceChildren(...f.card.map(([cls, text]) => p(cls, text)));
   $('btn').textContent = `${f.btn} →`;
-  $('btn').href = f.path;
+  const k = new URLSearchParams(location.search).get('k');
+  $('btn').href = f.path === '/science/' || !k ? f.path : `${f.path}?k=${encodeURIComponent(k)}`;
   $('hunt').textContent = `You found code #${n}. Find all 6 around Creekside!`;
 }

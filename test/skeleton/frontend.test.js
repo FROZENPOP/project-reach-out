@@ -35,14 +35,18 @@ test('11. footer has team, school, chapter, 988, not-medical-advice, references 
   assert.match(footerHtml(null), /988/);
 });
 
-test('12. index.html: one h1, header, footer, all six QR pages and both hero links, no inline style or script', async () => {
+test('12. index.html: one h1, header, footer, open links, locked tiles for codes 1-5, no inline style or script', async () => {
   const html = await read('public/index.html');
   assert.equal(html.match(/<h1[\s>]/g).length, 1);
   assert.match(html, /<site-header><\/site-header>/);
   assert.match(html, /<site-footer><\/site-footer>/);
-  for (const href of ['/fact/', '/challenge/', '/pulse/', '/listen/', '/your-turn/', '/science/', '/experiment/', '/game/']) {
+  for (const href of ['/science/', '/experiment/', '/game/']) {
     assert.match(html, new RegExp(`href="${href}"`), href);
   }
+  for (const href of ['/fact/', '/challenge/', '/pulse/', '/listen/', '/your-turn/', '/posters/']) {
+    assert.doesNotMatch(html, new RegExp(`href="${href}`), `${href} must stay locked`);
+  }
+  assert.equal(html.match(/class="card tile-locked"/g)?.length, 5);
   assert.doesNotMatch(html, /\sstyle\s*=/i);
   assert.doesNotMatch(html, /\son[a-z]+\s*=/i);
   for (const [, attrs, inner] of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {

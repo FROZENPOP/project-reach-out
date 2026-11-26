@@ -25,7 +25,7 @@ a CMS, a build step, a frontend framework.
 
 | Path | What |
 |---|---|
-| `public/` | The site: home, QR pages, science, game, experiment, results, posters, admin |
+| `public/` | The site: home, QR pages, science, game, experiment, results, flyers, admin |
 | `public/css/`, `public/js/site.js` | Design tokens, shared header and footer, API helper |
 | `public/data/*.json` | Facts, challenges, references, team details |
 | `public/img/` | Logo files |
@@ -48,10 +48,9 @@ a CMS, a build step, a frontend framework.
 | `/experiment/` | Check in, pick actions, get a code; come back with the code to check out |
 | `/results/` | Before/after chart, pulse results, campaign counts, approved answers |
 | `/flyer/?n=1..6` | The QR campaign flyer each code opens first, with a button to its page |
-| `/posters/` | Printable sheet of the six QR codes |
 | `/admin/` | Approve or reject answers, download CSVs. Not linked from the site |
 
-QR codes encode `<origin>/q/<n>`, never the page URL, so pages can move.
+QR codes encode `<origin>/q/<token>`, never a page URL. Tokens are secret (`QR_KEYS` Worker secret, JSON of code number to token), so a topic opens only after scanning its code. `/flyer/`, `/fact/`, `/challenge/`, `/pulse/`, `/listen/` and `/your-turn/` run through the Worker: their pages need `?k=<that code's token>` or redirect to `/#codes`; their css and js are served as usual. `/science/` stays open.
 
 ## Interfaces
 
@@ -81,7 +80,7 @@ with the right status: 400 `invalid_body`, 401 `unauthorized`, 404 `not_found`,
 
 | Route | Body | Success |
 |---|---|---|
-| `GET /q/:n` | | 302 to `/flyer/?n=<n>` for QR `n` 1 to 6 (anything else `/`); each flyer's button opens its page (1 fact, 2 challenge, 3 pulse, 4 listen, 5 your-turn, 6 science). Adds one to `scan:<n>`. Redirects even if the write fails |
+| `GET /q/:token` | | 302 to `/flyer/?n=<n>&k=<token>` for a token in `QR_KEYS` (anything else `/`); each flyer's button opens its page with the same key. Adds one to `scan:<n>`. Redirects even if the write fails |
 | `POST /api/count` | `{ name }`, one of `challenge_done`, `game_played`, `listen_opened` | 204 |
 | `POST /api/pulse` | `{ lack, left_out, isolated }`, integers 1 to 3 | 201 `{ ok: true }` |
 | `POST /api/answers` | `{ text }`, 1 to 280 characters after trim | 201 `{ ok: true }` |

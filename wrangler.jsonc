@@ -9,7 +9,8 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
     // The Worker only sees these paths; everything else is served straight from public/.
-    "run_worker_first": ["/api/*", "/q/*"]
+    // The QR topic folders go through it so their pages can be locked to their codes.
+    "run_worker_first": ["/api/*", "/q/*", "/flyer/*", "/fact/*", "/challenge/*", "/pulse/*", "/listen/*", "/your-turn/*"]
   },
   "d1_databases": [
     { "binding": "DB", "database_name": "reach-out", "database_id": "a55dc07a-40a5-424d-bb83-b828beefa807", "migrations_dir": "migrations" }

@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeEnv, call } from '../helpers/env.js';
+import { makeEnv, call, TEST_QR_KEYS as K } from '../helpers/env.js';
 
 let env, dispose;
 beforeEach(async () => ({ env, dispose } = await makeEnv()));
@@ -17,7 +17,7 @@ test('18. after one request to every route, no table holds the IP or the user ag
     return res;
   };
 
-  await send('GET', '/q/1');
+  await send('GET', `/q/${K[1]}`);
   await send('POST', '/api/count', { name: 'listen_opened' });
   await send('POST', '/api/pulse', { lack: 2, left_out: 2, isolated: 2 });
   await send('POST', '/api/answers', { text: 'my friends' });

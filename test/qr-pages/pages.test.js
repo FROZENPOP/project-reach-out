@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const PAGES = ['fact', 'challenge', 'pulse', 'listen', 'your-turn', 'posters'];
+const PAGES = ['fact', 'challenge', 'pulse', 'listen', 'your-turn'];
 
 test('10. each QR page has one h1, header, footer, site.css, no style= and no inline script', async () => {
   for (const page of PAGES) {
@@ -19,8 +19,6 @@ test('10. each QR page has one h1, header, footer, site.css, no style= and no in
       assert.equal(inner.trim(), '', `${page}: inline script body`);
     }
   }
-  const posters = await readFile(new URL('../../public/posters/index.html', import.meta.url), 'utf8');
-  assert.match(posters, /<meta name="robots" content="noindex">/);
   const pulse = await readFile(new URL('../../public/pulse/index.html', import.meta.url), 'utf8');
   assert.ok(pulse.includes('No one reads answers one by one. If you need help now, call or text 988 or talk to an adult you trust.'), 'pulse: not-monitored line');
   const challenge = await readFile(new URL('../../public/challenge/index.html', import.meta.url), 'utf8');
